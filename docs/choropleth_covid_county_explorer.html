@@ -1,0 +1,20 @@
+---
+layout: default
+title: Choropleth Covid Explorer
+permalink: /choropleth_covid_county_explorer
+---
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<div class="choropleth-row">
+<div class="instructions">
+	<span> Explore county-level statistics by choosing a state.</span>
+	<div class="mobile_alert">*Please note the dashboard is best explored using a larger screen than currently set</div>
+</div>
+<div class="state-choropleth-wrap"> 
+{% include bokeh_viz/choropleth_covid_explorer_tags.html %}
+</div>
+ </div>
+<div class="national-choropleth-wrap"> 
+ <img id="national_img" class="choropleth-nat" src="assets/national_layout_13.png" alt="national county-level covid choropleth" />
+ <input type="range" id="slider" class="national_slider" value="0.0" min="0" max="13" step="1" />
+</div>
+ {% include bokeh_viz/choropleth_county_cust_wrap.html %}
