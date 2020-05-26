@@ -1,0 +1,28 @@
+title: "\"Real-Time\" Covid19 County-Level Dashboards"
+description: >-
+  Monitoring localized infection resurgences as distancing, testing and tracing measures evolve.
+
+# Build settings
+markdown: kramdown
+theme: jekyll-theme-cayman
+google_analytics: UA-164298056-1
+show_downloads: false
+covid_explorer_url: county_covid_explorer.html
+choropleth_covid_explorer_url: choropleth_covid_county_explorer.html
+needs_bokeh: true
+
+plugins:
+  - jekyll-feed
+
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
