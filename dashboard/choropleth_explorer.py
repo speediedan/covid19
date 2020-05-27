@@ -41,7 +41,7 @@ def build_national_sources(cpleth_dfs: List[pd.DataFrame]) -> [List[ColumnDataSo
     for df in cpleth_dfs:
         df['confirmed %infected'] = df['confirmed %infected'].apply(
             lambda x: round(x, 1) if isinstance(x, float) else x)
-        df['2nd_order_growth'] = df['2nd_order_growth'].apply(lambda x: round(x, 1) if isinstance(x, float) else x)
+        df['2nd_order_growth'] = df['2nd_order_growth'].apply(lambda x: round(100*x, 1) if isinstance(x, float) else x)
         df['Rt'] = df['Rt'].apply(lambda x: round(x, 2) if isinstance(x, float) else x)
         national_cpleth_df = df.copy()
         national_cpleth_df = national_cpleth_df.reset_index().drop(columns=['state', 'id'])

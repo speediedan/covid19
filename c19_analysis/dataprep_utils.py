@@ -236,8 +236,8 @@ def add_columns(df_subr: pd.DataFrame) -> pd.DataFrame:
     df_subr['daily new cases ma'] = df_subr['Estimated Onset Cases'].rolling(window=4).mean().round()
     df_subr['growth_rate'] = df_subr['Total Estimated Cases'].pct_change().round(4)
     df_subr.loc[df_subr['node_days'] < np.timedelta64(1, 'D'), 'growth_rate'] = None
-    df_subr['growth_period_n'] = df_subr['growth_rate'].rolling(4).mean().round(4)
-    df_subr['growth_period_n-1'] = df_subr['growth_rate'].shift(4).rolling(4).mean().round(4)
+    df_subr['growth_period_n'] = df_subr['growth_rate'].rolling(4).mean()
+    df_subr['growth_period_n-1'] = df_subr['growth_rate'].shift(4).rolling(4).mean()
     df_subr.loc[df_subr['node_days'] < np.timedelta64(3, 'D'), 'daily new cases ma'] = None
     df_subr.loc[df_subr['node_days'] < np.timedelta64(4, 'D'), 'growth_period_n'] = None
     df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), 'growth_period_n-1'] = None
