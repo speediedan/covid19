@@ -123,7 +123,7 @@ cust_tooltip_above = """
         <span>Daily New Onset Cases: @daily_new_cases_ma</span>
     </div>
     <div>
-        <span>2nd Order Growth: @2nd_order_growth{0.00}</span>
+        <span>2nd Order Growth: @2nd_order_growth{0.0}%</span>
     </div>
     <div>
         <span>Confirmed %Infected: @confirmed_infected{0.00}</span>

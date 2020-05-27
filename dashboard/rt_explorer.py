@@ -61,7 +61,7 @@ def build_tablesource(status_df: pd.DataFrame) -> ColumnDataSource:
     datatable_df = status_df.copy()
     datatable_df = datatable_df.loc[(datatable_df['daily new cases ma'] > 0) & (datatable_df['growth_period_n'] > 0) &
                                     (datatable_df['Total Estimated Cases'] > 200)]
-    datatable_df['2nd_order_growth'] = datatable_df['2nd_order_growth'].apply(lambda x: round(x, 2))
+    datatable_df['2nd_order_growth'] = datatable_df['2nd_order_growth'].apply(lambda x: round(x*100, 2))
     datatable_df['Rt'] = datatable_df['Rt'].apply(lambda x: round(x, 2))
     datatable_df['Estimated Onset Cases'] = datatable_df['Estimated Onset Cases'].apply(lambda x: round(x))
     datatable_df = datatable_df.reset_index().sort_values('Rt', ascending=False)
@@ -77,7 +77,7 @@ def build_countytable(status_df: pd.DataFrame) -> [DataTable, ColumnDataSource]:
         TableColumn(field="confirmed %infected", title="Confirmed %Infected", width=constants.d_col_width),
         TableColumn(field="daily new cases ma", title="Daily Cases MA", width=constants.d_col_width),
         TableColumn(field="Confirmed New Cases", title="Confirmed New Cases", width=constants.d_col_width),
-        TableColumn(field="2nd_order_growth", title="2nd Order Growth", width=constants.d_col_width),
+        TableColumn(field="2nd_order_growth", title="2nd Order Growth (%)", width=constants.d_col_width),
         TableColumn(field="Total Estimated Cases", title="Total Est. Cases", width=constants.d_col_width)
     ]
     countytable = DataTable(source=countytable_cds, columns=countycolumns, fit_columns=True, index_header="Rt Rk.",
