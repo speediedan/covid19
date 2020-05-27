@@ -1,6 +1,7 @@
 from typing import List
 from pathlib import Path
-import os, sys
+import os
+import sys
 
 import pandas as pd
 import numpy as np
@@ -20,6 +21,7 @@ def create_dirs(dirs: List) -> None:
     except OSError as err:
         print(f"Creating directories error: {err}")
         sys.exit(0)
+
 
 # pands/bokeh config
 pd.set_option('display.max_seq_items', None)
@@ -47,14 +49,13 @@ county_codes_csv = Path(f"{COVID_BASE}/static_datasets/county_codes.csv")
 state_fips_csv = Path(f"{COVID_BASE}/static_datasets/state_fips.csv")
 
 # various staging/cache file locations
-default_stage_dir = f"{os.environ['HOME']}/datasets/covid19/{COVID_BASE.rsplit('/',1)[1]}"
+default_stage_dir = f"{os.environ['HOME']}/datasets/covid19/master"
 eda_tmp_dir = os.environ['STAGE_DIR'] if 'STAGE_DIR' in os.environ.keys() else default_stage_dir
 if not os.path.exists(eda_tmp_dir):
     create_dirs([eda_tmp_dir])
 ds_meta = Path(f"{eda_tmp_dir}/ds_meta.json")
 repo_patient_onset_csv = Path(f"{eda_tmp_dir}/latestdata.tar.gz")
-local_patient_map_csv = Path(f"{eda_tmp_dir}/patient_map.csv")
-latest_data_zip = Path(f"{eda_tmp_dir}/latest_data.tar.gz")
+latest_case_data_zip = Path(f"{eda_tmp_dir}/latest_case_data.tar.gz")
 county_rt_calc_zip = Path(f"{eda_tmp_dir}/latest_county_rt_data.tar.gz")
 county_covid_explorer_tags = Path(f"{eda_tmp_dir}/county_covid_explorer_tags.html")
 choro_covid_explorer_tags = Path(f"{eda_tmp_dir}/choropleth_covid_explorer_tags.html")

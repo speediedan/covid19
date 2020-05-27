@@ -61,7 +61,7 @@ def build_tablesource(status_df: pd.DataFrame) -> ColumnDataSource:
     datatable_df = status_df.copy()
     datatable_df = datatable_df.loc[(datatable_df['daily new cases ma'] > 0) & (datatable_df['growth_period_n'] > 0) &
                                     (datatable_df['Total Estimated Cases'] > 200)]
-    datatable_df['2nd_order_growth'] = datatable_df['2nd_order_growth'].apply(lambda x: round(x*100, 2))
+    datatable_df['2nd_order_growth'] = datatable_df['2nd_order_growth'].apply(lambda x: round(x, 1))
     datatable_df['Rt'] = datatable_df['Rt'].apply(lambda x: round(x, 2))
     datatable_df['Estimated Onset Cases'] = datatable_df['Estimated Onset Cases'].apply(lambda x: round(x))
     datatable_df = datatable_df.reset_index().sort_values('Rt', ascending=False)
@@ -75,8 +75,8 @@ def build_countytable(status_df: pd.DataFrame) -> [DataTable, ColumnDataSource]:
         TableColumn(field="name", title="name", width=100),
         TableColumn(field="Rt", title="Rt", default_sort='descending', width=constants.d_col_width),
         TableColumn(field="confirmed %infected", title="Confirmed %Infected", width=constants.d_col_width),
-        TableColumn(field="daily new cases ma", title="Daily Cases MA", width=constants.d_col_width),
-        TableColumn(field="Confirmed New Cases", title="Confirmed New Cases", width=constants.d_col_width),
+        TableColumn(field="daily new cases ma", title="Est. New Cases Onset", width=constants.d_col_width),
+        TableColumn(field="Confirmed New Cases", title="New Cases Confirmed", width=constants.d_col_width),
         TableColumn(field="2nd_order_growth", title="2nd Order Growth (%)", width=constants.d_col_width),
         TableColumn(field="Total Estimated Cases", title="Total Est. Cases", width=constants.d_col_width)
     ]
@@ -135,7 +135,7 @@ def init_rtplot(cust_palette: List, patchsources: Dict[str, Tuple], default_coun
 
 
 def init_simple_plot(target_field: str, y_axlabel: 'str', cust_palette_tup: Tuple = None, hline_loc: float = None,
-                     ybounds: List[float] = None) -> [Figure, Dict]:
+                     ybounds: Tuple[float] = None) -> [Figure, Dict]:
     mapper = None
     if cust_palette_tup:
         cust_palette, low, high, low_color, high_color = cust_palette_tup
@@ -182,14 +182,14 @@ def multi_series_plot(ybounds: List[Tuple]) -> [Figure, Dict]:
 def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], source: ColumnDataSource,
                         counties: pd.Index, default_county: str) -> [Figure, List[Figure], ExtAutocompleteInput]:
     rtplot, rtmapper = init_rtplot(cust_palette, patchsources, default_county)
-    fields, labels = ['2nd_order_growth'],  ['2nd Order Growth']
-    tups = [tuple((cust_palette, -.2, .2, '#33FF33', '#FF3333'))]
+    fields, labels, ttfmt = ['2nd_order_growth'],  ['2nd Order Growth'], ['{0.0}%']
+    tups = [tuple((cust_palette, -50, 50, '#33FF33', '#FF3333'))]
     hlines = [0]
-    ybounds = [[-1, 1]]
+    ybounds = [None]
     plots = []
-    for (f, l, tup, h, yb) in zip(fields, labels, tups, hlines, ybounds):
+    for (f, l, ttf, tup, h, yb) in zip(fields, labels, ttfmt, tups, hlines, ybounds):
         plot, mapper = init_simple_plot(f, l, tup, h, yb)
-        plot_dict = {'plot': plot, 'mapper': mapper, 'field': f}
+        plot_dict = {'plot': plot, 'mapper': mapper, 'field': f, 'ttf': ttf}
         plots.append(plot_dict)
     # add multi_series_plot
     ms_plot, _ = multi_series_plot([(0, None), (0, None)])
@@ -201,7 +201,7 @@ def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], sour
         cmap = p['mapper'] or 'red'
         p['plot'].circle(x='Date', y=p['field'], source=source, view=view, color=cmap, size=8, fill_alpha=0.5,
                          line_alpha=0.8, line_color='black')
-        hoverv = f"@{p['field']}" + "{0.2f}"
+        hoverv = f"@{p['field']}{p['ttf']}"
         cust_tooltip_p = constants.cust_tooltip_p_start + hoverv + constants.cust_tooltip_p_end
         p['plot'].hover.tooltips = cust_tooltip_p
     ms_plot.circle(x='Date', y='daily new cases ma', source=source, view=view, color='blue', size=8, fill_alpha=0.5,

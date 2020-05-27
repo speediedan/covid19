@@ -124,6 +124,7 @@ def gen_rt_df(usafacts_delta_df: pd.DataFrame, case_density: float = config.case
     rt_df = rt_df.reset_index()
     rt_df = rt_df.set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])
     rt_df = rt_df.sort_values(by=['id', 'Date'])
+    rt_df['2nd_order_growth'] = rt_df['2nd_order_growth'].apply(lambda x: round(x * 100, 2))
     rt_df['naive_R0'] = rt_df.apply(lambda x: round(cust_seir.r_calc(x['Total Estimated Cases'], x['node_days']), 2)
                                     if x['daily new cases ma'] > 0 else None, axis=1)
     return rt_df

@@ -18,18 +18,18 @@ def build_latest_case_data() -> [pd.DataFrame, bool]:
     dt_cnt = len(usafacts_df['confirmed'].iloc[0])
     saved_cnt = covid_utils.load_json(config.ds_meta) if config.ds_meta.exists() else 0
     updated = False
-    if saved_cnt < dt_cnt or not config.latest_data_zip.exists():
-        for cache in [config.local_patient_map_csv, config.county_rt_calc_zip]:
+    if saved_cnt < dt_cnt or not config.latest_case_data_zip.exists():
+        for cache in [config.repo_patient_onset_csv, config.county_rt_calc_zip]:
             # remove invalid downstream caches if built
             if cache.exists():
                 os.remove(cache)
         usafacts_df = covid_utils.process_df(usafacts_df, county_pops_df, county_codes_df, dt_cnt)
         covid_utils.save_json(dt_cnt, config.ds_meta)
-        usafacts_df.to_csv(config.latest_data_zip, compression='gzip')
+        usafacts_df.to_csv(config.latest_case_data_zip, compression='gzip')
         updated = True
     else:
         print('No update to case data source, loading core case data from cache')
-        usafacts_df = pd.read_csv(config.latest_data_zip, compression='gzip',
+        usafacts_df = pd.read_csv(config.latest_case_data_zip, compression='gzip',
                                   index_col=['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'], parse_dates=True)
     usafacts_delta_df = covid_utils.add_columns(usafacts_df)
     return usafacts_delta_df, updated
