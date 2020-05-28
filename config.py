@@ -42,7 +42,6 @@ onset_args = {"parse_dates": False, "usecols": ['date_confirmation', 'date_onset
 COVID_BASE = os.environ['COVID_BASE'] if 'COVID_BASE' in os.environ.keys() else \
     os.path.dirname(os.path.realpath(__file__))
 
-
 us_counties_path = Path(f"{COVID_BASE}/static_datasets/us_counties.tar.gz")
 county_pops_csv = Path(f"{COVID_BASE}/static_datasets/county_pops.csv")
 county_codes_csv = Path(f"{COVID_BASE}/static_datasets/county_codes.csv")
@@ -50,6 +49,9 @@ state_fips_csv = Path(f"{COVID_BASE}/static_datasets/state_fips.csv")
 
 # various staging/cache file locations
 default_stage_dir = f"{os.environ['HOME']}/datasets/covid19/master"
+curr_base = COVID_BASE.rsplit('/', 1)[1]
+default_stage_dir = f"{os.environ['HOME']}/datasets/covid19/{curr_base}" if curr_base != "covid19" else \
+    f"{os.environ['HOME']}/datasets/covid19/master"
 eda_tmp_dir = os.environ['STAGE_DIR'] if 'STAGE_DIR' in os.environ.keys() else default_stage_dir
 if not os.path.exists(eda_tmp_dir):
     create_dirs([eda_tmp_dir])
