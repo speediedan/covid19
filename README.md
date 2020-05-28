@@ -18,11 +18,11 @@
    * The most salient change I've made in the process of the extension is that rather than using a prior of gamma-distributed generation intervals to estimate R (which seems totally reasonable), I'm experimenting with incorporating more locally-relevant information by calculating an R0 using initial incidence data from each locality.
    * For execution environments that are compute-constrained, I've also provided (but left disabled) some performance enhancing functions that cut execution time by about 50% at the cost of ~5% accuracy.
 
-### "Real-Time" County-Level Dashboard
-!["Real-Time" County-Level Dashboard](docs/assets/rt_county_dashboard.gif)
-
 ### "Real-Time" State Choropleth
 !["Real-Time" State Choropleth](docs/assets/state_choropleth.gif)
+
+### "Real-Time" County-Level Dashboard
+!["Real-Time" County-Level Dashboard](docs/assets/rt_explorer.gif)
 
 ### "Real-Time" National Choropleth
 !["Real-Time" National Choropleth](docs/assets/national_choropleth.gif)
