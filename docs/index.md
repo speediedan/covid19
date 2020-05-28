@@ -20,12 +20,12 @@ permalink: /
    * Importantly, it should be noted that (as of 2020.05.12) access to testing is continuing to increase and test-positivity rates are therefore changing at a [substantial rate](https://www.cdc.gov/coronavirus/2019-ncov/covid-data/covidview/index.html). As the testing bias continues to evolve in the near-term, one should recognize that point R<sub>t</sub> estimates will be biased to be higher than ground truth R<sub>t</sub>. There are approaches that can [mitigate this bias to a limited extent](http://freerangestats.info/blog/2020/05/09/covid-population-incidence) but fundamentally, we don't have sufficient data to eliminate the bias at this point so I've deprioritized making those model adjustments at the moment (I may make testing-related adjustments in the future though and PRs are welcome!). Fortunately, as testing access and bias stabilize at a level that increases validity of confirmed case counts, these R<sub>t</sub> estimates should become increasingly accurate. I think we can expect hotspot monitoring tools such as this to have utility for a number of months, so this initial period of testing volatility does not nullify their value.
    * The most salient change I've made in the process of the extension is that rather than using a prior of gamma-distributed generation intervals to estimate R (which seems totally reasonable), I'm experimenting with incorporating more locally-relevant information by calculating an R0 using initial incidence data from each locality.
    * For execution environments that are compute-constrained, I've also provided (but left disabled) some performance enhancing functions that cut execution time by about 50% at the cost of ~5% accuracy.
-   
-### "Real-Time" County-Level Dashboard
-!["Real-Time" County-Level Dashboard](assets/rt_county_dashboard.gif)
 
 ### "Real-Time" State Choropleth
 !["Real-Time" State Choropleth](assets/state_choropleth.gif)
+
+### "Real-Time" County-Level Dashboard
+!["Real-Time" County-Level Dashboard](assets/rt_explorer.gif)
 
 ### "Real-Time" National Choropleth
 !["Real-Time" National Choropleth](assets/national_choropleth.gif)
