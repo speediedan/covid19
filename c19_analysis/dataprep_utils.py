@@ -274,10 +274,10 @@ def build_viz_dfs(rt_df: pd.DataFrame, viz_cols: List) -> [List, datetime.dateti
 
 def export_rtdf(df: pd.DataFrame) -> None:
     column_mask = ['Rt', '90_CrI_LB', '90_CrI_UB', '2nd_order_growth']
-    exported_rtdf = df[column_mask].reset_index()
-    exported_rtdf.to_json(path_or_buf=config.exported_rtdf_gzip, date_format='iso', orient='records',
-                          compression='gzip')
-    exported_rtdf.to_json(path_or_buf=config.exported_rtdf_uncomp, date_format='iso', orient='records')
+    exported_rtdf = df[column_mask]
+    exported_rtdf.to_csv(config.exported_rtdf_csv, compression='gzip')
+    exported_rtdf.reset_index().to_json(path_or_buf=config.exported_rtdf_json, date_format='iso', orient='records',
+                                        compression='gzip')
 
 
 def prep_dashboard_dfs(rt_df: pd.DataFrame) -> [pd.DataFrame, List[pd.DataFrame], pd.DataFrame]:

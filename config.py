@@ -63,8 +63,8 @@ county_covid_explorer_tags = Path(f"{eda_tmp_dir}/county_covid_explorer_tags.htm
 choro_covid_explorer_tags = Path(f"{eda_tmp_dir}/choropleth_covid_explorer_tags.html")
 national_layout_png_tmp = Path(f"{eda_tmp_dir}/national_layout_tmp.png")
 cpath_counties_zip = Path(f"{eda_tmp_dir}/cpath_counties_df.tar.gz")
-exported_rtdf_gzip = Path(f"{eda_tmp_dir}/rtdf_export.tar.gz")
-exported_rtdf_uncomp = Path(f"{eda_tmp_dir}/rtdf_export.json")
+exported_rtdf_json = Path(f"{eda_tmp_dir}/rtdf_export_json.tar.gz")
+exported_rtdf_csv = Path(f"{eda_tmp_dir}/rtdf_export_csv.tar.gz")
 
 # Rt estimation constraints
 # range of r_t to explore when calculating r_t using Bayesian approach
