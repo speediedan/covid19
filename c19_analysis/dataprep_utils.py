@@ -272,11 +272,20 @@ def build_viz_dfs(rt_df: pd.DataFrame, viz_cols: List) -> [List, datetime.dateti
     return viz_df_instances, county_f_st_dt, county_date_instances
 
 
+def export_rtdf(df: pd.DataFrame) -> None:
+    column_mask = ['Rt', '90_CrI_LB', '90_CrI_UB', '2nd_order_growth']
+    exported_rtdf = df[column_mask].reset_index()
+    exported_rtdf.to_json(path_or_buf=config.exported_rtdf_gzip, date_format='iso', orient='records',
+                          compression='gzip')
+    exported_rtdf.to_json(path_or_buf=config.exported_rtdf_uncomp, date_format='iso', orient='records')
+
+
 def prep_dashboard_dfs(rt_df: pd.DataFrame) -> [pd.DataFrame, List[pd.DataFrame], pd.DataFrame]:
     viz_cols = ['Estimated Onset Cases', 'Total Estimated Cases', 'node_start_dt', 'daily new cases ma',
                 'Confirmed New Cases', 'growth_rate', 'growth_period_n', 'growth_period_n-1', '2nd_order_growth', 'Rt',
                 '90_CrI_LB', '90_CrI_UB']
     rt_df = rt_df.loc[(rt_df['2nd_order_growth'] < np.inf) & state_condition(rt_df), :]
+    export_rtdf(rt_df)
     viz_df_instances, county_f_st_dt, county_date_instances = build_viz_dfs(rt_df, viz_cols)
     status_df = rt_df.loc[pd.IndexSlice[:, :, :, :, county_f_st_dt], viz_cols]
     status_df['confirmed %infected'] = \
