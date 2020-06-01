@@ -15,6 +15,7 @@ cust_tooltip_p_start = f"""
 """
 cust_tooltip_p_end = "</span></div>"
 d_col_width = 50
+circle_marker_size = 6
 autocomplete_input_code = """
 // handling rtplot separately from other plots due to patch complexity etc.
 console.log('Patch sources value is:' + patchsources[choices.value]);
