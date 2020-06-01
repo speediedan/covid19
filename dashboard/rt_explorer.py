@@ -195,19 +195,21 @@ def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], sour
     ms_plot, _ = multi_series_plot([(0, None), (0, None)])
     view, choices = build_autocomplete_grph_driver(rtplot, plots, ms_plot, patchsources, source, default_county,
                                                    counties)
-    rtplot.circle(x='Date', y='Rt', source=source, view=view, color=rtmapper, size=8, fill_alpha=0.5, line_alpha=0.8,
-                  line_color='black')
+    rtplot.circle(x='Date', y='Rt', source=source, view=view, color=rtmapper, size=constants.circle_marker_size,
+                  fill_alpha=0.5, line_alpha=0.8, line_color='black')
     for p in plots:
         cmap = p['mapper'] or 'red'
-        p['plot'].circle(x='Date', y=p['field'], source=source, view=view, color=cmap, size=8, fill_alpha=0.5,
-                         line_alpha=0.8, line_color='black')
+        p['plot'].circle(x='Date', y=p['field'], source=source, view=view, color=cmap,
+                         size=constants.circle_marker_size, fill_alpha=0.5, line_alpha=0.8, line_color='black')
         hoverv = f"@{p['field']}{p['ttf']}"
         cust_tooltip_p = constants.cust_tooltip_p_start + hoverv + constants.cust_tooltip_p_end
         p['plot'].hover.tooltips = cust_tooltip_p
-    ms_plot.circle(x='Date', y='daily new cases ma', source=source, view=view, color='blue', size=8, fill_alpha=0.5,
-                   line_alpha=0.8, line_color='black', legend_label='Est. Cases Onset')
-    ms_plot.circle(x='Date', y='Confirmed New Cases', source=source, view=view, color='red', size=8, fill_alpha=0.5,
-                   line_alpha=0.8, line_color='black', legend_label='Cases Confirmed')
+    ms_plot.circle(x='Date', y='daily new cases ma', source=source, view=view, color='blue',
+                   size=constants.circle_marker_size, fill_alpha=0.5, line_alpha=0.8, line_color='black',
+                   legend_label='Est. Cases Onset')
+    ms_plot.circle(x='Date', y='Confirmed New Cases', source=source, view=view, color='red',
+                   size=constants.circle_marker_size, fill_alpha=0.5, line_alpha=0.8, line_color='black',
+                   legend_label='Cases Confirmed')
     ms_plot.legend.location = "top_right"
     ms_plot.legend.background_fill_alpha = 0
     ms_plot.legend.border_line_alpha = 0
