@@ -77,7 +77,7 @@ def exec_ode_full(s: float, e: float, i: float, r: float, hosp_rec: float, home_
     results = odeint(seir, (s, e, i, r, hosp_rec, home_rec), time_steps, ktup)
     if mode != 'full':
         # return hospitalizations scalar if not in full mode
-        # noinspection PyTypeChecker
+        # noinspection PyTypeChecker,PyUnresolvedReferences
         result_scalar = results[-1, 5] if results.shape[0] > 0 else 0
         return result_scalar
     else:
@@ -132,7 +132,7 @@ def build_seir_input(rt_df: pd.DataFrame) -> \
 
 
 def model_temp_constraints(county_f_dt: datetime.datetime, county_st_dt: datetime.datetime,
-                           t_total: int = config.t_total) -> [int, List, np.ndarray, np.ndarray]:
+                           t_total: int = config.t_total) -> Tuple[int, List, np.ndarray, np.ndarray]:
     history_dur = (county_f_dt - county_st_dt).days
     history_dates = [county_st_dt + datetime.timedelta(n) for n in range(history_dur + 1)]
     f_dates = [county_st_dt + datetime.timedelta(n) for n in range(history_dur + 1, t_total)]

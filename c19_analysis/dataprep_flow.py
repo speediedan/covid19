@@ -1,3 +1,7 @@
+from typing import Tuple
+import os
+import time
+
 import config
 import c19_analysis.dataprep_utils as covid_utils
 import c19_analysis.bayesian_rt_est as bayes_rt
@@ -6,11 +10,9 @@ import dashboard.rt_explorer as rt_explorer
 import dashboard.choropleth_explorer as choropleth_explorer
 import dashboard.static_mpl_viz as static_mpl_viz
 import pandas as pd
-import os
-import time
 
 
-def build_latest_case_data() -> [pd.DataFrame, bool]:
+def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     covid_utils.create_dirs([config.eda_tmp_dir])
     usafacts_df = pd.read_json(config.USAFACTS_URL)
     county_pops_df = pd.read_csv(config.county_pops_csv)

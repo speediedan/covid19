@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -69,7 +69,7 @@ def build_tablesource(status_df: pd.DataFrame) -> ColumnDataSource:
     return ColumnDataSource(datatable_df)
 
 
-def build_countytable(status_df: pd.DataFrame) -> [DataTable, ColumnDataSource]:
+def build_countytable(status_df: pd.DataFrame) -> Tuple[DataTable, ColumnDataSource]:
     countytable_cds = build_tablesource(status_df)
     countycolumns = [
         TableColumn(field="name", title="name", width=100),
@@ -88,10 +88,10 @@ def build_countytable(status_df: pd.DataFrame) -> [DataTable, ColumnDataSource]:
 
 def build_autocomplete_grph_driver(rtplot: Figure, plots: List, ms_plot: Figure, patchsources: Dict[str, Tuple],
                                    source: ColumnDataSource, default_county: str,
-                                   counties: pd.Index) -> [CDSView, ExtAutocompleteInput]:
+                                   counties: pd.Index) -> Tuple[CDSView, ExtAutocompleteInput]:
     choices = ExtAutocompleteInput(completions=counties.tolist(), case_sensitive=False, value=default_county,
-                                title='Type or select county:', name="county_input", width_policy='fit',
-                                css_classes=['autocomplete_input'], min_width=250, align="start")
+                                   title='Type or select county:', name="county_input", width_policy='fit',
+                                   css_classes=['autocomplete_input'], min_width=250, align="start")
     someargs = dict(source=source, rtplot=rtplot, rtxaxis=rtplot.xaxis[0], rtyaxis=rtplot.yaxis[0],
                     ms_plot=ms_plot, ms_plot_xaxis=ms_plot.xaxis[0], ms_plot_yaxis0=ms_plot.yaxis[0],
                     plots=plots, choices=choices, patchsources=patchsources)
@@ -109,7 +109,7 @@ def build_autocomplete_grph_driver(rtplot: Figure, plots: List, ms_plot: Figure,
 
 
 def init_rtplot(cust_palette: List, patchsources: Dict[str, Tuple], default_county: str, low: float = 0.5,
-                high: float = 1.5) -> [Figure, Dict]:
+                high: float = 1.5) -> Tuple[Figure, Dict]:
     mapper = linear_cmap(field_name='Rt', palette=cust_palette, low=low, high=high, low_color='#33FF33',
                          high_color='#FF3333')
     plot_size_and_tools = {'height_policy': 'fit', 'width_policy': 'fit', 'plot_width': 300, 'plot_height': 250,
@@ -135,11 +135,10 @@ def init_rtplot(cust_palette: List, patchsources: Dict[str, Tuple], default_coun
 
 
 def init_simple_plot(target_field: str, y_axlabel: 'str', cust_palette_tup: Tuple = None, hline_loc: float = None,
-                     ybounds: Tuple[float] = None) -> [Figure, Dict]:
+                     ybounds: Tuple[float] = None) -> Tuple[Figure, Dict]:
     mapper = None
     if cust_palette_tup:
         cust_palette, low, high, low_color, high_color = cust_palette_tup
-        #cust_palette = cust_palette[::-1]  # reverse color palette for high==bad scenario
         mapper = linear_cmap(field_name=target_field, palette=cust_palette, low=low, high=high, low_color=low_color,
                              high_color=high_color)
     plot_size_and_tools = {'height_policy': 'fit', 'width_policy': 'fit', 'plot_width': 300, 'plot_height': 250,
@@ -162,7 +161,7 @@ def init_simple_plot(target_field: str, y_axlabel: 'str', cust_palette_tup: Tupl
     return plot, mapper
 
 
-def multi_series_plot(ybounds: List[Tuple]) -> [Figure, Dict]:
+def multi_series_plot(ybounds: List[Tuple]) -> Tuple[Figure, Optional[Dict]]:
     mapper = None
     plot_size_and_tools = {'height_policy': 'fit', 'width_policy': 'fit', 'plot_width': 300, 'plot_height': 250,
                            'min_width': 250, 'max_height': 300, 'min_height': 250, 'margin': 5, 'border_fill_alpha': 0,
@@ -180,7 +179,7 @@ def multi_series_plot(ybounds: List[Tuple]) -> [Figure, Dict]:
 
 
 def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], source: ColumnDataSource,
-                        counties: pd.Index, default_county: str) -> [Figure, List[Figure], ExtAutocompleteInput]:
+                        counties: pd.Index, default_county: str) -> Tuple[Figure, List, Figure, ExtAutocompleteInput]:
     rtplot, rtmapper = init_rtplot(cust_palette, patchsources, default_county)
     fields, labels, ttfmt = ['2nd_order_growth'],  ['2nd Order Growth'], ['{0.0}%']
     tups = [tuple((cust_palette, -50, 50, '#33FF33', '#FF3333'))]
@@ -246,7 +245,7 @@ def set_plots_blank(plots: List[Figure]) -> None:
 
 
 def build_dashboard_doc(rt_df: pd.DataFrame, status_df: pd.DataFrame, debug_mode: bool = False) \
-        -> [pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
+        -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
     # define core document objects
     curdoc().clear()
     primary_rt_plot_df, counties_df, main_plot_df, counties = build_dashboard_dfs(rt_df, status_df)

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Tuple
 import json
 from pathlib import Path
 import os
@@ -256,7 +256,7 @@ def state_condition(df: pd.DataFrame):
     return df.index.get_level_values('id') % 1000 != 0
 
 
-def build_viz_dfs(rt_df: pd.DataFrame, viz_cols: List) -> [List, datetime.datetime]:
+def build_viz_dfs(rt_df: pd.DataFrame, viz_cols: List) -> Tuple[List, datetime.datetime, List]:
     # set horizon for national rt visualization
     viz_horizon = datetime.timedelta(13)
     county_f_st_dt = rt_df.index.get_level_values('Date').max()
@@ -280,7 +280,7 @@ def export_rtdf(df: pd.DataFrame) -> None:
                                         compression='gzip')
 
 
-def prep_dashboard_dfs(rt_df: pd.DataFrame) -> [pd.DataFrame, List[pd.DataFrame], pd.DataFrame]:
+def prep_dashboard_dfs(rt_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[pd.DataFrame], pd.DataFrame, List]:
     viz_cols = ['Estimated Onset Cases', 'Total Estimated Cases', 'node_start_dt', 'daily new cases ma',
                 'Confirmed New Cases', 'growth_rate', 'growth_period_n', 'growth_period_n-1', '2nd_order_growth', 'Rt',
                 '90_CrI_LB', '90_CrI_UB']

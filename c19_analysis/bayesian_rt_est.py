@@ -3,7 +3,7 @@
 # Rather than using a prior of gamma-distributed generation intervals to estimate R (which seems totally reasonable),
 # I'm experimenting with incorporating more locally-relevant information by calculating an R0 using initial incidence
 # data from each locality.
-from typing import Union
+from typing import Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -51,7 +51,7 @@ def equal_tail_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9) -> 
 
 
 def get_posteriors(sr: pd.Series, gm_sigma: float, r_prior: float,
-                   r_t_range: np.ndarray) -> [pd.DataFrame, pd.DataFrame]:
+                   r_t_range: np.ndarray) -> Tuple[pd.DataFrame, float]:
     # Calculate $\lambda$ - the expected arrival rate for every day's poisson process
     lam = sr[:-1].values * np.exp(cust_seir.gamma * (r_t_range[:, None] - 1))
     # Calculate each day's likelihood distribution over all possible values of $R_t$

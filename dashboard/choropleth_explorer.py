@@ -36,7 +36,7 @@ def build_aspect_map(data_source: ColumnDataSource) -> Tuple:
     return tuple((min_width, min_height, max_width, max_height))
 
 
-def build_national_sources(cpleth_dfs: List[pd.DataFrame]) -> [List[ColumnDataSource], List[pd.DataFrame]]:
+def build_national_sources(cpleth_dfs: List[pd.DataFrame]) -> Tuple[List[ColumnDataSource], List[pd.DataFrame]]:
     national_cpleth_sources = []
     for df in cpleth_dfs:
         df['confirmed %infected'] = df['confirmed %infected'].apply(
@@ -55,7 +55,7 @@ def build_national_sources(cpleth_dfs: List[pd.DataFrame]) -> [List[ColumnDataSo
 
 
 def build_cpleth_plot_df(states: pd.Index, cpleth_dfs: List[pd.DataFrame]) \
-        -> [List[ColumnDataSource], Dict[ColumnDataSource, Tuple], Figure, List[Figure]]:
+        -> Tuple[List[ColumnDataSource], Dict, Figure, List[Figure]]:
     national_cpleth_sources, cpleth_dfs = build_national_sources(cpleth_dfs)
     cpleth_sources = {}
     # use only the latest national snapshot for state-level views
@@ -158,7 +158,7 @@ def gen_national_imgs(i: int, natp: Figure, county_date_instances: List) -> None
     os.remove(config.national_layout_png_tmp)
 
 
-def build_cpleth_df(df_instances: List[pd.DataFrame]) -> [List[pd.DataFrame], pd.Index]:
+def build_cpleth_df(df_instances: List[pd.DataFrame]) -> Tuple[List[pd.DataFrame], pd.Index]:
     strip_apos = lambda x: [float(y) for y in re.sub(r'\'', '', x)[1:-1].split(',')]
     converters = {'lats': strip_apos, 'lons': strip_apos}
     us_counties_df = pd.read_csv(config.us_counties_path, compression='gzip', index_col=['id'], converters=converters)

@@ -73,6 +73,7 @@ def build_static_rtplot(target_df: pd.DataFrame, ttl: str) -> None:
     plt.close(fig)
 
 
+# noinspection PyUnresolvedReferences
 def multline_plot(tmp_df: pd.DataFrame, ttl: str, ylims: List[float], sc: str, ythresh: float) -> None:
     plt.style.use('seaborn-darkgrid')
     f = plt.figure(figsize=(40, 50), dpi=50)
