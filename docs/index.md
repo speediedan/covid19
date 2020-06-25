@@ -1,6 +1,6 @@
 ---
 layout: default
-title: \"Real-Time\" Covid19 County-Level Status
+title: \"Real-Time\" Covid19 County-Level Rt Dashboards
 permalink: /
 ---
 > ### [The "Real-Time" County-Level Dashboard](county_covid_explorer.html):
