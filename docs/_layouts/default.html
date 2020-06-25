@@ -2,10 +2,15 @@
 <html lang="{{ site.lang | default: "en-US" }}">
   <head>
     <meta charset="UTF-8">
-
-{% seo %}
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#157878">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#157878" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@speediedan" />
+    <meta property="og:url" content="https://speediedan.github.io/covid19" />
+    <meta property="og:title" content="'Real-Time' Covid19 County-Level Rt Dashboards" />
+    <meta property="og:description" content="Monitoring localized infection resurgences as distancing, testing and tracing measures evolve." />
+    <meta property="og:image" content="https://speediedan.github.io/covid19/assets/covid19_twitter_summary_card.png" />
+    {% seo %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     {% if site.needs_bokeh %}
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.js" crossorigin="anonymous"></script>
