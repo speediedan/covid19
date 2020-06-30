@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import shutil
+import sys
 
 from typing import Any, List, Dict, Tuple
 import json
@@ -44,11 +46,26 @@ def save_json(var: Any, filename: str) -> None:
             file.write(line + '\n')
 
 
-def read_cached_csv(cached_csv_loc: Path, src_url: PathLike, stream: bool = False, src_gzipped: bool = False,
+def patient_onset_stage(gzipped_file: Path, src_url: PathLike, target_dir: Path):
+    # manually unzipping tar.gz. file due to header mismatch bug detected on 2020.06.30
+    try:
+        download_large_file(src_url, gzipped_file)
+        clear_output(wait=True)
+        print('Done downloading.')
+    except:
+        print('Something went wrong with patient onset download, cannot proceed with analysis. Exiting...')
+        sys.exit(1)
+    shutil.unpack_archive(str(gzipped_file), str(target_dir))
+
+
+def read_cached_csv(cached_csv_loc: Path, src_url: PathLike = None, stream: bool = False, src_gzipped: bool = False,
                     read_csv_args: Dict = None) -> pd.DataFrame:
     if src_gzipped:
         read_csv_args['compression'] = 'gzip'
     if not cached_csv_loc.exists():
+        if not src_url:
+            print(f"The specified csv file doesn't exist and no download source provided. Exiting...")
+            sys.exit(1)
         if stream:
             try:
                 download_large_file(src_url, cached_csv_loc)
@@ -94,7 +111,7 @@ def dailydata(df_subr: pd.DataFrame, oldname: str, newname: str) -> pd.DataFrame
     return subr_daily
 
 
-def date_xform(time_series_df: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
+def date_xform_old(time_series_df: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
     usaf_start_dt = pd.to_datetime('1/22/2020', format='%m/%d/%Y')
     dates_us = [(usaf_start_dt + datetime.timedelta(n)).date() for n in range(dt_cnt)]
     time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop'}, inplace=True)
@@ -108,19 +125,31 @@ def date_xform(time_series_df: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
     return time_series_df
 
 
-def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
+def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
+    time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
+    # unpivot date columns keeping identifiying columns specified, then set index based on renamed variable column
+    # time_series_df.reset_index(inplace=True)
+    time_series_df = time_series_df.melt(id_vars=['id', 'estimated_pop', 'name', 'stateAbbr'], var_name='Date',
+                                         value_name='Cases')
+    time_series_df['Date'] = time_series_df['Date'].apply(lambda x: pd.to_datetime(x))
+    time_series_df = time_series_df.set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])
+    return time_series_df
+
+
+def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd.DataFrame:
     df = df.drop_duplicates(subset=['countyFIPS', 'stateFIPS'])
     df['id'] = df.apply(lambda x: x['countyFIPS'] if x['countyFIPS'] else x['stateFIPS'] * 1000, axis=1)
-    df.drop(columns=['countyFIPS', 'county', 'stateFIPS', 'deaths', 'popul'], inplace=True)
+    # df.drop(columns=['countyFIPS', 'county', 'stateFIPS', 'deaths', 'popul'], inplace=True)
+    df.drop(columns=['countyFIPS', 'County Name', 'stateFIPS'], inplace=True)
     # Load the state and county codes
     df = pd.merge(cc, df, how='left', on='id')
     df.fillna(0, inplace=True)
-    df['confirmed'] = df.apply(lambda x: x['confirmed'] if x['confirmed'] else [0] * dt_cnt, axis=1)
-    time_series_dfs = [df, pd.DataFrame(df['confirmed'].tolist())]
-    time_series_df = pd.concat(time_series_dfs, axis=1).drop('confirmed', axis=1)
-    time_series_df.set_index(['id'], inplace=True)
-    time_series_df = pd.merge(cp, time_series_df, how='left', on='id')
-    time_series_df = date_xform(time_series_df, dt_cnt)
+    # df['confirmed'] = df.apply(lambda x: x['confirmed'] if x['confirmed'] else [0] * dt_cnt, axis=1)
+    # time_series_dfs = [df, pd.DataFrame(df['confirmed'].tolist())]
+    # time_series_df = pd.concat(time_series_dfs, axis=1).drop('confirmed', axis=1)
+    # time_series_df.set_index(['id'], inplace=True)
+    time_series_df = pd.merge(cp, df, how='left', on='id')
+    time_series_df = date_xform(time_series_df)
     return time_series_df
 
 
@@ -208,11 +237,11 @@ def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd
     county_pops = county_pops.astype({'STATE': 'int64', 'COUNTY': 'int64'})
     county_pops['id'] = county_pops.apply(lambda x: x['STATE'] * 1000 + x['COUNTY'], axis=1)
     county_pops = county_pops.drop(columns=['STATE', 'COUNTY', 'CTYNAME']).set_index(['id'])
-    time_series_df = prep_time_series(df_raw, county_pops, county_codes, dt_cnt)
+    time_series_df = prep_time_series(df_raw, county_pops, county_codes)
     time_series_df = dailydata(time_series_df, 'Cases', 'Daily New Cases')
-    onset_confirmed_df = read_cached_csv(config.repo_patient_onset_csv, config.PATIENT_ONSET_MAP_URL, stream=True,
-                                         src_gzipped=True,
-                                         read_csv_args=config.onset_args)
+    if not Path(config.repo_patient_onset_csv).exists():
+        patient_onset_stage(config.repo_patient_onset_zip, config.PATIENT_ONSET_MAP_URL, config.eda_tmp_dir)
+    onset_confirmed_df = read_cached_csv(config.repo_patient_onset_csv, read_csv_args=config.onset_args)
     onset_confirmed_df = update_onset_xform(onset_confirmed_df)
     onset_df = generate_onset_dist(onset_confirmed_df)
     adjusted_onset_df = onset_shift_by_county(time_series_df, onset_df, test_mode=False)
