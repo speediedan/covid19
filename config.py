@@ -31,7 +31,8 @@ settings.log_level = 'info'
 pd.options.mode.chained_assignment = None
 
 # remote files
-USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/2020/coronavirus-timeline/allData.json"
+#USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/2020/coronavirus-timeline/allData.json"
+USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
 PATIENT_ONSET_MAP_URL = \
     "https://github.com/beoutbreakprepared/nCoV2019/blob/master/latest_data/latestdata.tar.gz?raw=true"
 
@@ -56,7 +57,8 @@ eda_tmp_dir = os.environ['STAGE_DIR'] if 'STAGE_DIR' in os.environ.keys() else d
 if not os.path.exists(eda_tmp_dir):
     create_dirs([eda_tmp_dir])
 ds_meta = Path(f"{eda_tmp_dir}/ds_meta.json")
-repo_patient_onset_csv = Path(f"{eda_tmp_dir}/latestdata.tar.gz")
+repo_patient_onset_zip = Path(f"{eda_tmp_dir}/latestdata.tar.gz")
+repo_patient_onset_csv = Path(f"{eda_tmp_dir}/latestdata.csv")
 latest_case_data_zip = Path(f"{eda_tmp_dir}/latest_case_data.tar.gz")
 county_rt_calc_zip = Path(f"{eda_tmp_dir}/latest_county_rt_data.tar.gz")
 county_covid_explorer_tags = Path(f"{eda_tmp_dir}/county_covid_explorer_tags.html")

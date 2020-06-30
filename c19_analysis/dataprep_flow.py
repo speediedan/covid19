@@ -14,10 +14,11 @@ import pandas as pd
 
 def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     covid_utils.create_dirs([config.eda_tmp_dir])
-    usafacts_df = pd.read_json(config.USAFACTS_URL)
+    # usafacts_df = pd.read_json(config.USAFACTS_URL)
+    usafacts_df = pd.read_csv(config.USAFACTS_URL)
     county_pops_df = pd.read_csv(config.county_pops_csv)
     county_codes_df = pd.read_csv(config.county_codes_csv)
-    dt_cnt = len(usafacts_df['confirmed'].iloc[0])
+    dt_cnt = len(usafacts_df.columns)-4
     saved_cnt = covid_utils.load_json(config.ds_meta) if config.ds_meta.exists() else 0
     updated = False
     if saved_cnt < dt_cnt or not config.latest_case_data_zip.exists():
