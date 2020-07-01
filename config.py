@@ -90,3 +90,7 @@ min_days_over = 2
 
 # when updating dashboard in daemon mode, wait this time between checks of the case data source
 case_src_check_interval = 3600
+
+# mail notification config
+# must set MAIL_USER and MAIL_APP_PASSWORD env params
+mail_subject = 'Covid19 Real-time Rt Dashboard Generation Results'
