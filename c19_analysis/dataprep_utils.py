@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import shutil
 import sys
+import re
 
 from typing import Any, List, Dict, Tuple
 import json
@@ -127,11 +128,14 @@ def date_xform_old(time_series_df: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
 
 def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
     time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
+    # drop unnamed columns before parsing (data feed occasionally includes an errant comma)
+    drop_unnamed = [c for c in time_series_df.columns if re.compile(r"Unnamed*").match(c)]
+    if drop_unnamed:
+        time_series_df.drop(columns=drop_unnamed, inplace=True)
     # unpivot date columns keeping identifiying columns specified, then set index based on renamed variable column
-    # time_series_df.reset_index(inplace=True)
     time_series_df = time_series_df.melt(id_vars=['id', 'estimated_pop', 'name', 'stateAbbr'], var_name='Date',
                                          value_name='Cases')
-    time_series_df['Date'] = time_series_df['Date'].apply(lambda x: pd.to_datetime(x))
+    time_series_df['Date'] = time_series_df['Date'].apply(lambda x: pd.to_datetime(x, format='%m/%d/%y'))
     time_series_df = time_series_df.set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])
     return time_series_df
 

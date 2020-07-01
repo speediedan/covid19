@@ -56,7 +56,7 @@ if test -f $dash_logfile
       echo "Beginning dashboard generation mode in daemon mode " >> $dash_logfile
     fi
 fi
-/opt/anaconda/envs/${target_env}/bin/python ${COVID_BASE}/c19_analysis/dataprep_flow.py 2>&1 1>>$dash_logfile
+/opt/anaconda/envs/${target_env}/bin/python ${COVID_BASE}/c19_analysis/dataprep_flow.py 1>>$dash_logfile 2>&1
 dash_gen=$?
 if [[ ${dash_gen} -eq 0 ]]; then
   if [[ "${curr_branch}" == "master"  ]]; then
