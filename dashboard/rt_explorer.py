@@ -3,7 +3,7 @@ from typing import List, Dict, Tuple, Optional
 import numpy as np
 import pandas as pd
 from matplotlib.patches import Patch
-from bokeh.models import ColumnDataSource, CDSView, CustomJS, CustomJSFilter, Patch, Span, TableColumn, DataTable
+from bokeh.models import ColumnDataSource, CDSView, CustomJS, CustomJSFilter, Patch, Span, TableColumn, DataTable, AutocompleteInput
 from bokeh.plotting import Figure
 from bokeh.io import show, curdoc
 from bokeh.embed import components
@@ -13,7 +13,6 @@ from bokeh.transform import linear_cmap
 import config
 import c19_analysis.dataprep_utils as covid_utils
 import dashboard.dashboard_constants as constants
-from dashboard.cust_autocomplete import ExtAutocompleteInput
 
 
 def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
@@ -88,8 +87,8 @@ def build_countytable(status_df: pd.DataFrame) -> Tuple[DataTable, ColumnDataSou
 
 def build_autocomplete_grph_driver(rtplot: Figure, plots: List, ms_plot: Figure, patchsources: Dict[str, Tuple],
                                    source: ColumnDataSource, default_county: str,
-                                   counties: pd.Index) -> Tuple[CDSView, ExtAutocompleteInput]:
-    choices = ExtAutocompleteInput(completions=counties.tolist(), case_sensitive=False, value=default_county,
+                                   counties: pd.Index) -> Tuple[CDSView, AutocompleteInput]:
+    choices = AutocompleteInput(completions=counties.tolist(), case_sensitive=False, value=default_county,
                                    title='Type or select county:', name="county_input", width_policy='fit',
                                    css_classes=['autocomplete_input'], min_width=250, align="start")
     someargs = dict(source=source, rtplot=rtplot, rtxaxis=rtplot.xaxis[0], rtyaxis=rtplot.yaxis[0],
@@ -179,7 +178,7 @@ def multi_series_plot(ybounds: List[Tuple]) -> Tuple[Figure, Optional[Dict]]:
 
 
 def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], source: ColumnDataSource,
-                        counties: pd.Index, default_county: str) -> Tuple[Figure, List, Figure, ExtAutocompleteInput]:
+                        counties: pd.Index, default_county: str) -> Tuple[Figure, List, Figure, AutocompleteInput]:
     rtplot, rtmapper = init_rtplot(cust_palette, patchsources, default_county)
     fields, labels, ttfmt = ['2nd_order_growth'],  ['2nd Order Growth'], ['{0.0}%']
     tups = [tuple((cust_palette, -50, 50, '#33FF33', '#FF3333'))]
@@ -216,7 +215,7 @@ def build_dynamic_plots(cust_palette: List, patchsources: Dict[str, Tuple], sour
     return rtplot, plots, ms_plot, choices
 
 
-def set_tbl_logic(source: ColumnDataSource, choices: ExtAutocompleteInput, patchsources: Dict[str, Tuple],
+def set_tbl_logic(source: ColumnDataSource, choices: AutocompleteInput, patchsources: Dict[str, Tuple],
                   countytable_cds: ColumnDataSource, rtplot: Figure, plots: List[Dict], ms_plot: Figure) -> None:
     someargs = dict(source=source, rtplot=rtplot, rtxaxis=rtplot.xaxis[0], rtyaxis=rtplot.yaxis[0],
                     ms_plot=ms_plot, ms_plot_xaxis=ms_plot.xaxis[0], ms_plot_yaxis0=ms_plot.yaxis[0],
