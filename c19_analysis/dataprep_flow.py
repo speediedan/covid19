@@ -21,6 +21,7 @@ def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     dt_cnt = len(usafacts_df.columns)-4
     saved_cnt = covid_utils.load_json(config.ds_meta) if config.ds_meta.exists() else 0
     updated = False
+    # TODO: change dt_cnt to timestamp to avoid bugs associated with malformed datafeed
     if saved_cnt < dt_cnt or not config.latest_case_data_zip.exists():
         for cache in [config.repo_patient_onset_csv, config.county_rt_calc_zip]:
             # remove invalid downstream caches if built
