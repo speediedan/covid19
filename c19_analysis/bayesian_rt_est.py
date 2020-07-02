@@ -101,7 +101,7 @@ def build_rtdf(tmp_df: pd.DataFrame, rt_range: np.ndarray, test_mode: bool = Fal
                 most_likely = posteriors.idxmax().rename('Rt')
                 rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
             except ValueError:
-                pass
+                print(f"Encountered Rt calculation error. Current county is {c} ")
     return pd.concat(rt_df_tmps, axis=0)
 
 
@@ -113,7 +113,7 @@ def gen_rt_df(usafacts_delta_df: pd.DataFrame, case_density: float = config.case
     usafacts_delta_df_tmp = usafacts_delta_df_tmp.reset_index()
     usafacts_delta_df_tmp = usafacts_delta_df_tmp.set_index(['Date'])
     if not config.county_rt_calc_zip.exists():
-        rt_df = build_rtdf(usafacts_delta_df_tmp, config.r_t_range)
+        rt_df = build_rtdf(usafacts_delta_df_tmp, config.r_t_range, test_mode=False)
         rt_df.to_csv(config.county_rt_calc_zip, compression='gzip')
     else:
         rt_df = pd.read_csv(config.county_rt_calc_zip, compression='gzip',
