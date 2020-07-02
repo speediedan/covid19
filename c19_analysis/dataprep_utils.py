@@ -276,6 +276,8 @@ def add_columns(df_subr: pd.DataFrame) -> pd.DataFrame:
     df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), 'growth_period_n-1'] = None
     df_subr['2nd_order_growth'] = (df_subr['growth_period_n'] / df_subr['growth_period_n-1']).round(4) - 1
     df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), '2nd_order_growth'] = None
+    df_subr = df_subr.loc[df_subr.groupby(['id', 'estimated_pop', 'name', 'stateAbbr'])['daily new cases ma'].apply(lambda x: x > 0)]
+    df_subr = df_subr.loc[state_condition(df_subr)]
     return df_subr
 
 

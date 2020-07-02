@@ -80,7 +80,7 @@ def build_countytable(status_df: pd.DataFrame) -> Tuple[DataTable, ColumnDataSou
         TableColumn(field="Total Estimated Cases", title="Total Est. Cases", width=constants.d_col_width)
     ]
     countytable = DataTable(source=countytable_cds, columns=countycolumns, fit_columns=True, index_header="Rt Rk.",
-                            width_policy='max', height_policy='min', min_height=150, max_height=300,
+                            width_policy='max', height_policy='min', min_height=150, max_height=300, index_width=60,
                             scroll_to_selection=True, css_classes=['bk_datatable'])
     return countytable, countytable_cds
 

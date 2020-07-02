@@ -77,7 +77,8 @@ r_t_range = np.linspace(0, R_T_MAX, R_T_MAX * 100 + 1)
 case_density = 300
 epsilon = np.finfo(float).eps
 # test counties
-test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL']
+#test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL','Elmore County, ID','East Carroll Parish, LA']
+test_counties = ['Bullock County, AL','Elmore County, ID','East Carroll Parish, LA']
 
 # SEIR model defaults
 seir_target_county = 'Kings County, NY'
