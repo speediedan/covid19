@@ -112,20 +112,6 @@ def dailydata(df_subr: pd.DataFrame, oldname: str, newname: str) -> pd.DataFrame
     return subr_daily
 
 
-def date_xform_old(time_series_df: pd.DataFrame, dt_cnt: int) -> pd.DataFrame:
-    usaf_start_dt = pd.to_datetime('1/22/2020', format='%m/%d/%Y')
-    dates_us = [(usaf_start_dt + datetime.timedelta(n)).date() for n in range(dt_cnt)]
-    time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop'}, inplace=True)
-    new_name_dict = dict(zip(time_series_df.columns[3:].tolist(), dates_us))
-    time_series_df = time_series_df.rename(columns=new_name_dict)
-    # unpivot date columns keeping identifiying columns specified, then set index based on renamed variable column
-    time_series_df.reset_index(inplace=True)
-    time_series_df = time_series_df.melt(id_vars=['id', 'estimated_pop', 'name', 'stateAbbr'], var_name='Date',
-                                         value_name='Cases')
-    time_series_df = time_series_df.set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])
-    return time_series_df
-
-
 def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
     time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
     # drop unnamed columns before parsing (data feed occasionally includes an errant comma)
@@ -143,15 +129,10 @@ def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
 def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd.DataFrame:
     df = df.drop_duplicates(subset=['countyFIPS', 'stateFIPS'])
     df['id'] = df.apply(lambda x: x['countyFIPS'] if x['countyFIPS'] else x['stateFIPS'] * 1000, axis=1)
-    # df.drop(columns=['countyFIPS', 'county', 'stateFIPS', 'deaths', 'popul'], inplace=True)
     df.drop(columns=['countyFIPS', 'County Name', 'stateFIPS'], inplace=True)
     # Load the state and county codes
     df = pd.merge(cc, df, how='left', on='id')
     df.fillna(0, inplace=True)
-    # df['confirmed'] = df.apply(lambda x: x['confirmed'] if x['confirmed'] else [0] * dt_cnt, axis=1)
-    # time_series_dfs = [df, pd.DataFrame(df['confirmed'].tolist())]
-    # time_series_df = pd.concat(time_series_dfs, axis=1).drop('confirmed', axis=1)
-    # time_series_df.set_index(['id'], inplace=True)
     time_series_df = pd.merge(cp, df, how='left', on='id')
     time_series_df = date_xform(time_series_df)
     return time_series_df
@@ -236,8 +217,7 @@ def onset_shift_by_county(tmp_df: pd.DataFrame, onset_df: pd.Series, test_mode: 
     return pd.concat(onset_df_tmps, axis=0)
 
 
-def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd.DataFrame,
-               dt_cnt: int) -> pd.DataFrame:
+def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd.DataFrame) -> pd.DataFrame:
     county_pops = county_pops.astype({'STATE': 'int64', 'COUNTY': 'int64'})
     county_pops['id'] = county_pops.apply(lambda x: x['STATE'] * 1000 + x['COUNTY'], axis=1)
     county_pops = county_pops.drop(columns=['STATE', 'COUNTY', 'CTYNAME']).set_index(['id'])
@@ -276,7 +256,8 @@ def add_columns(df_subr: pd.DataFrame) -> pd.DataFrame:
     df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), 'growth_period_n-1'] = None
     df_subr['2nd_order_growth'] = (df_subr['growth_period_n'] / df_subr['growth_period_n-1']).round(4) - 1
     df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), '2nd_order_growth'] = None
-    df_subr = df_subr.loc[df_subr.groupby(['id', 'estimated_pop', 'name', 'stateAbbr'])['daily new cases ma'].apply(lambda x: x > 0)]
+    df_subr = df_subr.loc[
+        df_subr.groupby(['id', 'estimated_pop', 'name', 'stateAbbr'])['daily new cases ma'].apply(lambda x: x > 0)]
     df_subr = df_subr.loc[state_condition(df_subr)]
     return df_subr
 
@@ -327,3 +308,9 @@ def prep_dashboard_dfs(rt_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[pd.DataF
         round((status_df['Total Estimated Cases'] / status_df.index.get_level_values('estimated_pop')) * 100, 2)
     status_df = status_df.sort_values(['confirmed %infected'], ascending=False)
     return rt_df, viz_df_instances, status_df, county_date_instances
+
+
+def latest_date(df: pd.DataFrame):
+    dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[4:] if
+             not re.compile(r"Unnamed*").match(d)]
+    return max(dates)
