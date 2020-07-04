@@ -1,6 +1,7 @@
 from typing import Tuple
 import os
 import time
+import datetime
 
 import config
 import c19_analysis.dataprep_utils as covid_utils
@@ -14,21 +15,20 @@ import pandas as pd
 
 def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     covid_utils.create_dirs([config.eda_tmp_dir])
-    # usafacts_df = pd.read_json(config.USAFACTS_URL)
     usafacts_df = pd.read_csv(config.USAFACTS_URL)
     county_pops_df = pd.read_csv(config.county_pops_csv)
     county_codes_df = pd.read_csv(config.county_codes_csv)
-    dt_cnt = len(usafacts_df.columns)-4
-    saved_cnt = covid_utils.load_json(config.ds_meta) if config.ds_meta.exists() else 0
+    latest_dt = covid_utils.latest_date(usafacts_df)
+    saved_dt = datetime.datetime.strptime(covid_utils.load_json(config.ds_meta),'%Y-%m-%d') \
+        if config.ds_meta.exists() else datetime.datetime.strptime('01/01/2020','%m/%d/%Y')
     updated = False
-    # TODO: change dt_cnt to timestamp to avoid bugs associated with malformed datafeed
-    if saved_cnt < dt_cnt or not config.latest_case_data_zip.exists():
+    if saved_dt < latest_dt or not config.latest_case_data_zip.exists():
         for cache in [config.repo_patient_onset_csv, config.county_rt_calc_zip]:
             # remove invalid downstream caches if built
             if cache.exists():
                 os.remove(cache)
-        usafacts_df = covid_utils.process_df(usafacts_df, county_pops_df, county_codes_df, dt_cnt)
-        covid_utils.save_json(dt_cnt, config.ds_meta)
+        usafacts_df = covid_utils.process_df(usafacts_df, county_pops_df, county_codes_df)
+        covid_utils.save_json(latest_dt, config.ds_meta)
         usafacts_df.to_csv(config.latest_case_data_zip, compression='gzip')
         updated = True
     else:
