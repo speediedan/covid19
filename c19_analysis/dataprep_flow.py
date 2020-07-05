@@ -19,7 +19,7 @@ def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     county_pops_df = pd.read_csv(config.county_pops_csv)
     county_codes_df = pd.read_csv(config.county_codes_csv)
     latest_dt = covid_utils.latest_date(usafacts_df)
-    saved_dt = datetime.datetime.strptime(covid_utils.load_json(config.ds_meta),'%Y-%m-%d') \
+    saved_dt = datetime.datetime.strptime(covid_utils.load_json(config.ds_meta),'%Y-%m-%d %H:%M:%S') \
         if config.ds_meta.exists() else datetime.datetime.strptime('01/01/2020','%m/%d/%Y')
     updated = False
     if saved_dt < latest_dt or not config.latest_case_data_zip.exists():
