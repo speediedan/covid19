@@ -19,15 +19,18 @@ def highest_density_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9
     if isinstance(pmf, pd.DataFrame):
         return pd.DataFrame([highest_density_interval(pmf[col], p=p) for col in pmf],
                             index=pmf.columns)
-    cumsum = np.cumsum(pmf.values)
-    # N x N matrix of total probability mass for each low, high
-    total_p = cumsum - cumsum[:, None]
-    # Return all indices with total_p > p
-    lows, highs = (total_p > p).nonzero()
-    # Find the smallest range (highest density)
-    best = (highs - lows).argmin()
-    low = pmf.index[lows[best]]
-    high = pmf.index[highs[best]]
+    try:
+        cumsum = np.cumsum(pmf.values)
+        # N x N matrix of total probability mass for each low, high
+        total_p = cumsum - cumsum[:, None]
+        # Return all indices with total_p > p
+        lows, highs = (total_p > p).nonzero()
+        # Find the smallest range (highest density)
+        best = (highs - lows).argmin()
+        low = pmf.index[lows[best]]
+        high = pmf.index[highs[best]]
+    except Exception as e:
+        print(f"current pmf is {pmf} series is {pd}")
     return pd.Series([low, high], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
 
 
@@ -42,12 +45,12 @@ def highest_density_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9
 def equal_tail_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9) -> Union[pd.DataFrame, pd.Series]:
     # If we pass a DataFrame, just call this recursively on the columns
     if isinstance(pmf, pd.DataFrame):
-        return pd.DataFrame([highest_density_interval(pmf[col], p=p) for col in pmf],
+        return pd.DataFrame([equal_tail_interval(pmf[col], p=p) for col in pmf],
                             index=pmf.columns)
     # define custom discrete distribution
     custom_dist = sps.rv_discrete(name='custm', values=(pmf.index.to_numpy(), pmf.to_numpy()))
     lb, ub = custom_dist.ppf((1 - p) / 2), custom_dist.ppf(1 - (1 - p) / 2)
-    return pd.Series([lb, ub], index=[f'{p * 100:.0f}_CrI_LB_ETI', f'{p * 100:.0f}_CrI_UB_ETI'])
+    return pd.Series([lb, ub], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
 
 
 def get_posteriors(sr: pd.Series, gm_sigma: float, r_prior: float,
@@ -96,24 +99,25 @@ def build_rtdf(tmp_df: pd.DataFrame, rt_range: np.ndarray, test_mode: bool = Fal
                                                         r_t_range=rt_range)
             try:
                 # see note above regarding ETI approach
-                # etis = equal_tail_interval(posteriors, p=.9)
-                hdis = highest_density_interval(posteriors, p=.9)
+                etis = equal_tail_interval(posteriors, p=.9)
+                #hdis = highest_density_interval(posteriors, p=.9)
                 most_likely = posteriors.idxmax().rename('Rt')
-                rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
+                rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, etis], axis=1))
+                #rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
             except ValueError:
                 print(f"Encountered Rt calculation error. Current county is {c} ")
     return pd.concat(rt_df_tmps, axis=0)
 
 
-def gen_rt_df(usafacts_delta_df: pd.DataFrame, case_density: float = config.case_density) -> pd.DataFrame:
+def gen_rt_df(covid_delta_df: pd.DataFrame, case_density: float = config.case_density) -> pd.DataFrame:
     # keep only counties with confirmed case density of > case_density per million people
-    density = usafacts_delta_df['Total Estimated Cases']/usafacts_delta_df.index.get_level_values('estimated_pop')
+    density = covid_delta_df['Total Estimated Cases'] / covid_delta_df.index.get_level_values('estimated_pop')
     density_condition = density * 1000000 > case_density
-    usafacts_delta_df_tmp = usafacts_delta_df[(density_condition & (pd.notna(usafacts_delta_df['daily new cases ma'])))]
-    usafacts_delta_df_tmp = usafacts_delta_df_tmp.reset_index()
-    usafacts_delta_df_tmp = usafacts_delta_df_tmp.set_index(['Date'])
+    covid_delta_df_tmp = covid_delta_df[(density_condition & (pd.notna(covid_delta_df['daily new cases ma'])))]
+    covid_delta_df_tmp = covid_delta_df_tmp.reset_index()
+    covid_delta_df_tmp = covid_delta_df_tmp.set_index(['Date'])
     if not config.county_rt_calc_zip.exists():
-        rt_df = build_rtdf(usafacts_delta_df_tmp, config.r_t_range, test_mode=False)
+        rt_df = build_rtdf(covid_delta_df_tmp, config.r_t_range, test_mode=False)
         rt_df.to_csv(config.county_rt_calc_zip, compression='gzip')
     else:
         rt_df = pd.read_csv(config.county_rt_calc_zip, compression='gzip',
