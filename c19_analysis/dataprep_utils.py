@@ -113,11 +113,13 @@ def dailydata(df_subr: pd.DataFrame, oldname: str, newname: str) -> pd.DataFrame
 
 
 def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
-    time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
+    #time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
+    time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop'}, inplace=True)
     # drop unnamed columns before parsing (data feed occasionally includes an errant comma)
     drop_unnamed = [c for c in time_series_df.columns if re.compile(r"Unnamed*").match(c)]
     if drop_unnamed:
         time_series_df.drop(columns=drop_unnamed, inplace=True)
+    time_series_df = time_series_df.dropna()
     # unpivot date columns keeping identifiying columns specified, then set index based on renamed variable column
     time_series_df = time_series_df.melt(id_vars=['id', 'estimated_pop', 'name', 'stateAbbr'], var_name='Date',
                                          value_name='Cases')
@@ -126,7 +128,7 @@ def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
     return time_series_df
 
 
-def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd.DataFrame:
+def prep_time_series_usaf(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd.DataFrame:
     df = df.drop_duplicates(subset=['countyFIPS', 'stateFIPS'])
     df['id'] = df.apply(lambda x: x['countyFIPS'] if x['countyFIPS'] else x['stateFIPS'] * 1000, axis=1)
     df.drop(columns=['countyFIPS', 'County Name', 'stateFIPS'], inplace=True)
@@ -134,6 +136,24 @@ def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd
     df = pd.merge(cc, df, how='left', on='id')
     df.fillna(0, inplace=True)
     time_series_df = pd.merge(cp, df, how='left', on='id')
+    time_series_df = date_xform(time_series_df)
+    return time_series_df
+
+
+def prep_time_series(df: pd.DataFrame, cp: pd.DataFrame, cc: pd.DataFrame) -> pd.DataFrame:
+    df.drop(columns=['UID','iso2', 'iso3', 'code3', 'Admin2', 'Province_State', 'Country_Region', 'Lat', 'Long_',
+                     'Combined_Key'], inplace=True)
+    df = df.drop_duplicates(subset=['FIPS'])
+    df.rename(columns={'FIPS': 'id'}, inplace=True)
+    # Load the state and county codes
+    df = pd.merge(cc, df, how='left', on='id')
+    df.fillna(0, inplace=True)
+    time_series_df = pd.merge(cp, df, how='left', on='id')
+    time_series_df = time_series_df.rename(columns={'STATE': 'state_id'})
+    state_fips_df = pd.read_csv(config.state_fips_csv)
+    time_series_df = pd.merge(time_series_df, state_fips_df, how='left', on='state_id')
+    time_series_df = time_series_df.drop(columns=['state', 'state_id']).rename(columns={'abbr': 'stateAbbr'})
+    time_series_df['stateAbbr'] = time_series_df['stateAbbr'].apply(lambda x: str(x).upper())
     time_series_df = date_xform(time_series_df)
     return time_series_df
 
@@ -220,7 +240,8 @@ def onset_shift_by_county(tmp_df: pd.DataFrame, onset_df: pd.Series, test_mode: 
 def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd.DataFrame) -> pd.DataFrame:
     county_pops = county_pops.astype({'STATE': 'int64', 'COUNTY': 'int64'})
     county_pops['id'] = county_pops.apply(lambda x: x['STATE'] * 1000 + x['COUNTY'], axis=1)
-    county_pops = county_pops.drop(columns=['STATE', 'COUNTY', 'CTYNAME']).set_index(['id'])
+    # county_pops = county_pops.drop(columns=['STATE', 'COUNTY', 'CTYNAME']).set_index(['id'])
+    county_pops = county_pops.drop(columns=['COUNTY', 'CTYNAME']).set_index(['id'])
     time_series_df = prep_time_series(df_raw, county_pops, county_codes)
     time_series_df = dailydata(time_series_df, 'Cases', 'Daily New Cases')
     if not Path(config.repo_patient_onset_csv).exists():
@@ -228,6 +249,7 @@ def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd
     onset_confirmed_df = read_cached_csv(config.repo_patient_onset_csv, read_csv_args=config.onset_args)
     onset_confirmed_df = update_onset_xform(onset_confirmed_df)
     onset_df = generate_onset_dist(onset_confirmed_df)
+    time_series_df = time_series_df.loc[state_condition(time_series_df)].dropna()
     adjusted_onset_df = onset_shift_by_county(time_series_df, onset_df, test_mode=False)
     time_series_df = time_series_df.reset_index().set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])[
         ~time_series_df.index.duplicated()]
@@ -311,6 +333,8 @@ def prep_dashboard_dfs(rt_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[pd.DataF
 
 
 def latest_date(df: pd.DataFrame):
-    dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[4:] if
+    #dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[4:] if
+    #         not re.compile(r"Unnamed*").match(d)]
+    dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[11:] if
              not re.compile(r"Unnamed*").match(d)]
     return max(dates)
