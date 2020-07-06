@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats as sps
 from tqdm.notebook import tqdm
+import datetime
 
 import c19_analysis.cust_seir_model as cust_seir
 import config
@@ -17,21 +18,28 @@ import config
 def highest_density_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9) -> Union[pd.Series, pd.DataFrame]:
     # If we pass a DataFrame, just call this recursively on the columns
     if isinstance(pmf, pd.DataFrame):
-        return pd.DataFrame([highest_density_interval(pmf[col], p=p) for col in pmf],
-                            index=pmf.columns)
-    try:
-        cumsum = np.cumsum(pmf.values)
-        # N x N matrix of total probability mass for each low, high
-        total_p = cumsum - cumsum[:, None]
-        # Return all indices with total_p > p
-        lows, highs = (total_p > p).nonzero()
+        intervals = []
+        for col in pmf:
+            try:
+                intervals.append(highest_density_interval(pmf[col], p=p))
+            except ValueError:
+                print(f"current date is {col} series is {pmf[col]}")
+        return pd.DataFrame(intervals, index=pmf.columns)
+    cumsum = np.cumsum(pmf.values)
+    # N x N matrix of total probability mass for each low, high
+    total_p = cumsum - cumsum[:, None]
+    # Return all indices with total_p > p
+    lows, highs = (total_p > p).nonzero()
+    if not (len(highs) > 0 and len(lows) > 0):
+        # usually due to data collection error (but also in other edge cases), no 90% credible interval within our range
+        # so use the min and max r_t range
+        return pd.Series([pmf.index[0], pmf.index[-1]], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
+    else:
         # Find the smallest range (highest density)
         best = (highs - lows).argmin()
         low = pmf.index[lows[best]]
         high = pmf.index[highs[best]]
-    except Exception as e:
-        print(f"current pmf is {pmf} series is {pd}")
-    return pd.Series([low, high], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
+        return pd.Series([low, high], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
 
 
 # This approach using equal-tailed credible interval instead of an HDI is about twice as fast
@@ -45,9 +53,14 @@ def highest_density_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9
 def equal_tail_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9) -> Union[pd.DataFrame, pd.Series]:
     # If we pass a DataFrame, just call this recursively on the columns
     if isinstance(pmf, pd.DataFrame):
-        return pd.DataFrame([equal_tail_interval(pmf[col], p=p) for col in pmf],
-                            index=pmf.columns)
-    # define custom discrete distribution
+        intervals = []
+        for col in pmf:
+            try:
+                intervals.append(equal_tail_interval(pmf[col], p=p))
+            except ValueError as e:
+                print(f"current date is {col} series is {pmf[col]}")
+        return pd.DataFrame(intervals, index=pmf.columns)
+        # define custom discrete distribution
     custom_dist = sps.rv_discrete(name='custm', values=(pmf.index.to_numpy(), pmf.to_numpy()))
     lb, ub = custom_dist.ppf((1 - p) / 2), custom_dist.ppf(1 - (1 - p) / 2)
     return pd.Series([lb, ub], index=[f'{p * 100:.0f}_CrI_LB', f'{p * 100:.0f}_CrI_UB'])
@@ -99,11 +112,11 @@ def build_rtdf(tmp_df: pd.DataFrame, rt_range: np.ndarray, test_mode: bool = Fal
                                                         r_t_range=rt_range)
             try:
                 # see note above regarding ETI approach
-                etis = equal_tail_interval(posteriors, p=.9)
-                #hdis = highest_density_interval(posteriors, p=.9)
+                #etis = equal_tail_interval(posteriors, p=.9)
+                hdis = highest_density_interval(posteriors, p=.9)
                 most_likely = posteriors.idxmax().rename('Rt')
-                rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, etis], axis=1))
-                #rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
+                #rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, etis], axis=1))
+                rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
             except ValueError:
                 print(f"Encountered Rt calculation error. Current county is {c} ")
     return pd.concat(rt_df_tmps, axis=0)
