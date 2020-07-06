@@ -81,7 +81,10 @@ case_density = 300
 epsilon = np.finfo(float).eps
 # test counties
 #test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL','Elmore County, ID','East Carroll Parish, LA']
-test_counties = ['Bullock County, AL','Elmore County, ID','East Carroll Parish, LA','Los Angeles County, CA']
+#test_counties = ['Bullock County, AL','Elmore County, ID','East Carroll Parish, LA','Los Angeles County, CA']
+test_counties = [# 'Bexar County, TX',
+                 'Anderson County, TX','San Bernardino County, CA','Los Angeles County, CA']
+
 #test_counties = ['Los Angeles County, CA']
 
 # SEIR model defaults
