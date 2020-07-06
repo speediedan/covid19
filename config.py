@@ -34,8 +34,9 @@ pd.options.mode.chained_assignment = None
 # JHU CSSE daily series
 JHU_CSSE_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/" \
                "csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+# remove USAFACTS path after JHU_CSSE stability
 # USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/2020/coronavirus-timeline/allData.json"
-USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
+# USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
 PATIENT_ONSET_MAP_URL = \
     "https://github.com/beoutbreakprepared/nCoV2019/blob/master/latest_data/latestdata.tar.gz?raw=true"
 
@@ -80,12 +81,8 @@ r_t_range = np.linspace(0, R_T_MAX, R_T_MAX * 100 + 1)
 case_density = 300
 epsilon = np.finfo(float).eps
 # test counties
-#test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL','Elmore County, ID','East Carroll Parish, LA']
-#test_counties = ['Bullock County, AL','Elmore County, ID','East Carroll Parish, LA','Los Angeles County, CA']
-test_counties = [# 'Bexar County, TX',
-                 'Anderson County, TX','San Bernardino County, CA','Los Angeles County, CA']
-
-#test_counties = ['Los Angeles County, CA']
+test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL', 'Elmore County, ID',
+                 'East Carroll Parish, LA', 'Anderson County, TX', 'San Bernardino County', 'Los Angeles County, CA']
 
 # SEIR model defaults
 seir_target_county = 'Kings County, NY'

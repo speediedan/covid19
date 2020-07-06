@@ -57,7 +57,7 @@ def equal_tail_interval(pmf: Union[pd.DataFrame, pd.Series], p: float = 0.9) -> 
         for col in pmf:
             try:
                 intervals.append(equal_tail_interval(pmf[col], p=p))
-            except ValueError as e:
+            except ValueError:
                 print(f"current date is {col} series is {pmf[col]}")
         return pd.DataFrame(intervals, index=pmf.columns)
         # define custom discrete distribution
