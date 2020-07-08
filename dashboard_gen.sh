@@ -68,7 +68,7 @@ if [[ ${dash_gen} -eq 0 ]]; then
     commit_dashboard
   fi
   echo "Cleaning up old logs"
-  find "${LOG_DIR}/dashboard_generation_logs" -name 'covid19_dashboard.out_20*' -mtime +3 -print | xargs rm -rf
+  find "${LOG_DIR}/dashboard_generation_logs" -type f -name "covid19_dashboard_*.bkp" -mtime +7 -print | xargs rm -rf
   /opt/anaconda/envs/${target_env}/bin/python ${COVID_BASE}/notification.py -f "${dash_logfile}"
   rm $lock_file
 else
