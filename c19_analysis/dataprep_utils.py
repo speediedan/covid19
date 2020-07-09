@@ -113,7 +113,6 @@ def dailydata(df_subr: pd.DataFrame, oldname: str, newname: str) -> pd.DataFrame
 
 
 def date_xform(time_series_df: pd.DataFrame) -> pd.DataFrame:
-    #time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop', 'State': 'stateAbbr'}, inplace=True)
     time_series_df.rename(columns={'POPESTIMATE2018': 'estimated_pop'}, inplace=True)
     # drop unnamed columns before parsing (data feed occasionally includes an errant comma)
     drop_unnamed = [c for c in time_series_df.columns if re.compile(r"Unnamed*").match(c)]
@@ -240,7 +239,6 @@ def onset_shift_by_county(tmp_df: pd.DataFrame, onset_df: pd.Series, test_mode: 
 def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd.DataFrame) -> pd.DataFrame:
     county_pops = county_pops.astype({'STATE': 'int64', 'COUNTY': 'int64'})
     county_pops['id'] = county_pops.apply(lambda x: x['STATE'] * 1000 + x['COUNTY'], axis=1)
-    # county_pops = county_pops.drop(columns=['STATE', 'COUNTY', 'CTYNAME']).set_index(['id'])
     county_pops = county_pops.drop(columns=['COUNTY', 'CTYNAME']).set_index(['id'])
     time_series_df = prep_time_series(df_raw, county_pops, county_codes)
     time_series_df = dailydata(time_series_df, 'Cases', 'Daily New Cases')
@@ -336,8 +334,6 @@ def prep_dashboard_dfs(rt_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[pd.DataF
 
 
 def latest_date(df: pd.DataFrame):
-    #dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[4:] if
-    #         not re.compile(r"Unnamed*").match(d)]
     dates = [datetime.datetime.strptime(d, '%m/%d/%y') for d in list(df.columns)[11:] if
              not re.compile(r"Unnamed*").match(d)]
     return max(dates)

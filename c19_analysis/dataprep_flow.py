@@ -16,7 +16,6 @@ import pandas as pd
 def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     covid_utils.create_dirs([config.eda_tmp_dir])
     covid_cases_df = pd.read_csv(config.JHU_CSSE_URL)
-    # covid_cases_df = pd.read_csv(config.USAFACTS_URL)
     county_pops_df = pd.read_csv(config.county_pops_csv)
     county_codes_df = pd.read_csv(config.county_codes_csv)
     latest_dt = covid_utils.latest_date(covid_cases_df)

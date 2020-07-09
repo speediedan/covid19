@@ -34,9 +34,6 @@ pd.options.mode.chained_assignment = None
 # JHU CSSE daily series
 JHU_CSSE_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/" \
                "csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
-# remove USAFACTS path after JHU_CSSE stability
-# USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/2020/coronavirus-timeline/allData.json"
-# USAFACTS_URL = "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
 PATIENT_ONSET_MAP_URL = \
     "https://github.com/beoutbreakprepared/nCoV2019/blob/master/latest_data/latestdata.tar.gz?raw=true"
 

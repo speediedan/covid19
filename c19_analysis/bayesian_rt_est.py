@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats as sps
 from tqdm.notebook import tqdm
-import datetime
 
 import c19_analysis.cust_seir_model as cust_seir
 import config
@@ -112,10 +111,10 @@ def build_rtdf(tmp_df: pd.DataFrame, rt_range: np.ndarray, test_mode: bool = Fal
                                                         r_t_range=rt_range)
             try:
                 # see note above regarding ETI approach
-                #etis = equal_tail_interval(posteriors, p=.9)
+                # etis = equal_tail_interval(posteriors, p=.9)
                 hdis = highest_density_interval(posteriors, p=.9)
                 most_likely = posteriors.idxmax().rename('Rt')
-                #rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, etis], axis=1))
+                # rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, etis], axis=1))
                 rt_df_tmps.append(pd.concat([rt_df_tmp, most_likely, hdis], axis=1))
             except ValueError:
                 print(f"Encountered Rt calculation error. Current county is {c} ")
