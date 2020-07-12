@@ -5,3 +5,4 @@ gem 'rspec'
 gem 'jekyll-theme-cayman'
 gem "github-pages", "~> 204", group: :jekyll_plugins
 gem "activesupport", ">= 6.0.3.1"
+gem 'jekyll-sitemap'
