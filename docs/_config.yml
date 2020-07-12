@@ -10,7 +10,7 @@ show_downloads: false
 covid_explorer_url: county_covid_explorer.html
 choropleth_covid_explorer_url: choropleth_covid_county_explorer.html
 needs_bokeh: true
-url: "https://speediedan.github.io/covid19"
+url: "https://speediedan.github.io"
 
 plugins:
   - jekyll-feed
