@@ -138,7 +138,7 @@ cust_tooltip_below = """
         <span style="font-weight:bold;">@name</span>
     </div>
     <div>
-     <span>Infection density < threshold for R<sub>t</sub> calculation.</span>
+     <span>Infection density or case count < threshold for R<sub>t</sub> calculation.</span>
     </div>
 </div>
 """
