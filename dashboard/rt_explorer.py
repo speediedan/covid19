@@ -89,7 +89,7 @@ def build_autocomplete_grph_driver(rtplot: Figure, plots: List, ms_plot: Figure,
                                    source: ColumnDataSource, default_county: str,
                                    counties: pd.Index) -> Tuple[CDSView, AutocompleteInput]:
     choices = AutocompleteInput(completions=counties.tolist(), case_sensitive=False, value=default_county,
-                                   title='Type or select county:', name="county_input", width_policy='fit',
+                                   title='Search for county or select from table:', name="county_input", width_policy='fit',
                                    css_classes=['autocomplete_input'], min_width=250, align="start")
     someargs = dict(source=source, rtplot=rtplot, rtxaxis=rtplot.xaxis[0], rtyaxis=rtplot.yaxis[0],
                     ms_plot=ms_plot, ms_plot_xaxis=ms_plot.xaxis[0], ms_plot_yaxis0=ms_plot.yaxis[0],

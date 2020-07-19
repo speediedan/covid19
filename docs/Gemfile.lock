@@ -259,6 +259,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport (>= 6.0.3.1)
   github-pages (~> 204)
+  jekyll-redirect-from
   jekyll-sitemap
   jekyll-theme-cayman
   nokogiri

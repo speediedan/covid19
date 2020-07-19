@@ -7,6 +7,7 @@ markdown: kramdown
 theme: jekyll-theme-cayman
 google_analytics: UA-164298056-1
 show_downloads: false
+about_url: about.html
 covid_explorer_url: county_covid_explorer.html
 choropleth_covid_explorer_url: choropleth_covid_county_explorer.html
 needs_bokeh: true
