@@ -85,7 +85,7 @@ def build_cpleth_plot_df(states: pd.Index, cpleth_dfs: List[pd.DataFrame]) \
 def plot_config(ptype: str, data_source: ColumnDataSource) -> Figure:
     mapper = LinearColorMapper(palette=constants.cust_rg_palette, low=0.8, high=1.2, low_color='#33FF33',
                                high_color='#FF3333',
-                               nan_color='#33FF33')
+                               nan_color='#A9A9A9')
     color_bar = ColorBar(color_mapper=mapper, ticker=BasicTicker(),
                          label_standoff=12, border_line_color=None, location=(0, 0), background_fill_alpha=0,
                          background_fill_color=None, major_tick_line_alpha=0)

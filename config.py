@@ -87,7 +87,7 @@ t_total = 200  # days to forecast
 
 # Dashboard config
 # for main static status dashboard, rank counties with largest confirmed counts
-min_case_cnt = 200  # min case count for main static status dashboards and rt_explorer datasource
+min_case_cnt = 1000  # min case count for main static status dashboards and rt_explorer datasource
 #min_days_over = 2
 
 # when updating dashboard in daemon mode, wait this time between checks of the case data source
