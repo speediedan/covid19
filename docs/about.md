@@ -1,7 +1,7 @@
 ---
 layout: default
 title: \"Real-Time\" Covid19 County-Level Rt Dashboards
-permalink: /
+permalink: /about
 ---
 > ### [The "Real-Time" County-Level Dashboard](county_covid_explorer.html):
 > * **A "real-time"<sup>[1](#daily-onset-estimation)</sup> county-level dashboard w/ a focus on estimated effective reproduction number (R<sub>t</sub>)<sup>[2](#effective-reproduction-number-estimation)</sup>, 2nd order growth rates and confirmed infection density for most US counties (counties w/ > 0.03% confirmed infection density and > 200 cases)**
