@@ -23,7 +23,7 @@ def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
     # apply min case threshold
     rt_df = rt_df[rt_df['Total Estimated Cases'] > config.min_case_cnt]
     # apply min days over threshold
-    rt_df = rt_df.groupby(level='name').filter(lambda x: len(x) >= config.min_days_over)
+    #rt_df = rt_df.groupby(level='name').filter(lambda x: len(x) >= config.min_days_over)
     main_plot_df = rt_df.loc[rt_df.index.isin(primary_ids, 'id')]
     all_counties_cols = ['Date', 'name', 'Rt', '90_CrI_LB', '90_CrI_UB', 'daily new cases ma', 'Confirmed New Cases',
                            '2nd_order_growth']
@@ -59,7 +59,7 @@ def build_tablesource(status_df: pd.DataFrame) -> ColumnDataSource:
                       'Confirmed New Cases', '2nd_order_growth']
     datatable_df = status_df.copy()
     datatable_df = datatable_df.loc[(datatable_df['daily new cases ma'] > 0) & (datatable_df['growth_period_n'] > 0) &
-                                    (datatable_df['Total Estimated Cases'] > 200)]
+                                    (datatable_df['Total Estimated Cases'] > config.min_case_cnt)]
     datatable_df['2nd_order_growth'] = datatable_df['2nd_order_growth'].apply(lambda x: round(x, 1))
     datatable_df['Rt'] = datatable_df['Rt'].apply(lambda x: round(x, 2))
     datatable_df['Estimated Onset Cases'] = datatable_df['Estimated Onset Cases'].apply(lambda x: round(x))
