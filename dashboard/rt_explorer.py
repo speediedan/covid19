@@ -22,8 +22,9 @@ def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
     primary_ids = status_df.nlargest(30, 'Total Estimated Cases').index.get_level_values('id').tolist()
     # apply min case threshold
     rt_df = rt_df[rt_df['Total Estimated Cases'] > config.min_case_cnt]
-    # apply min days over threshold
-    #rt_df = rt_df.groupby(level='name').filter(lambda x: len(x) >= config.min_days_over)
+    # apply min days over threshold if relevant
+    if config.min_days_over > 1:
+        rt_df = rt_df.groupby(level='name').filter(lambda x: len(x) >= config.min_days_over)
     main_plot_df = rt_df.loc[rt_df.index.isin(primary_ids, 'id')]
     all_counties_cols = ['Date', 'name', 'Rt', '90_CrI_LB', '90_CrI_UB', 'daily new cases ma', 'Confirmed New Cases',
                            '2nd_order_growth']
