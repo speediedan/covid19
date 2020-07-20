@@ -290,8 +290,7 @@ label.bk {
     text-align:left;
 }
 
-@media only screen and (max-width: 650px), (max-height: 550px) {
-   .mobile_alert {
+.mobile_alert {
     visibility: visible;
     font-style: italic;
     font-weight: normal;
@@ -300,17 +299,36 @@ label.bk {
     width: 80%;
    }
 
+.choropleth-row {
+    width: 100%;
+    padding-left: 0.8em;
+    padding-top: 0.8em;
+    float: left;
 }
 
-@media only screen and (min-width: 651px) and (min-height: 551px) {
-.mobile_alert {
-    visibility: hidden;
-    line-height:0.0;
-}
+@media all and (min-width: 98em) and (min-height: 34em) {
+    .choropleth-row {
+        width: 40%;
+        padding-left: 0.8em;
+        padding-top: 0.8em;
+        float: left;
+    }
 }
 
-@media only screen and (max-width: 799px){
-   .rt_mobile_alert {
+@media all and (min-width: 40em) and (min-height: 34em) {
+    .mobile_alert {
+        visibility: hidden;
+        line-height:0.0;
+    }
+}
+
+.state-choropleth-wrap {
+    min-width: 650px;
+    width: 40%;
+    float: left;
+}
+
+.rt_mobile_alert {
     visibility: visible;
     font-style: italic;
     font-size: 0.75rem;
@@ -318,19 +336,18 @@ label.bk {
     width: 80%;
    }
 
-}
-
-@media only screen and (min-width: 800px) {
+@media only screen and (min-width: 50em) {
 .rt_mobile_alert {
     visibility: hidden;
     line-height:0.0;
 }
 }
+
 .filter_note {
     font-style: italic;
     font-size: 0.75rem;
     color: blue;
-    width: 80%;
+    width: 100%;
     padding-top:4px;
 }
 
