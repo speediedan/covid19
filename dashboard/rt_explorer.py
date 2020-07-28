@@ -18,13 +18,15 @@ import dashboard.dashboard_constants as constants
 def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
         [pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
     # apply min case threshold
-    status_df = status_df.loc[(status_df['Total Estimated Cases'] > config.min_case_cnt)]
-    primary_ids = status_df.nlargest(30, 'Total Estimated Cases').index.get_level_values('id').tolist()
+    #status_df = status_df.loc[(status_df['Total Estimated Cases'] > config.min_case_cnt)]
     # apply min case threshold
     rt_df = rt_df[rt_df['Total Estimated Cases'] > config.min_case_cnt]
     # apply min days over threshold if relevant
     if config.min_days_over > 1:
         rt_df = rt_df.groupby(level='name').filter(lambda x: len(x) >= config.min_days_over)
+        rt_ids = rt_df.index.unique('id').tolist()
+        status_df = status_df.loc[status_df.index.isin(rt_ids, 'id')]
+    primary_ids = status_df.nlargest(30, 'Total Estimated Cases').index.get_level_values('id').tolist()
     main_plot_df = rt_df.loc[rt_df.index.isin(primary_ids, 'id')]
     all_counties_cols = ['Date', 'name', 'Rt', '90_CrI_LB', '90_CrI_UB', 'daily new cases ma', 'Confirmed New Cases',
                            '2nd_order_growth']
@@ -36,7 +38,7 @@ def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
     all_counties_df = full_rt_df.loc[:, all_counties_cols].set_index(['name', 'Date'])
     counties = all_counties_df.index.unique(level='name')
     counties_df = all_counties_df.reset_index()
-    return primary_rt_plot_df, counties_df, main_plot_df, counties
+    return primary_rt_plot_df, counties_df, main_plot_df, counties, status_df
 
 
 def build_patchsources(counties: pd.Index, counties_df: pd.DataFrame) -> Dict[str, Tuple]:
@@ -248,7 +250,7 @@ def build_dashboard_doc(rt_df: pd.DataFrame, status_df: pd.DataFrame, debug_mode
         -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
     # define core document objects
     curdoc().clear()
-    primary_rt_plot_df, counties_df, main_plot_df, counties = build_dashboard_dfs(rt_df, status_df)
+    primary_rt_plot_df, counties_df, main_plot_df, counties, status_df = build_dashboard_dfs(rt_df, status_df)
     default_county = counties.tolist()[0]
     patchsources = build_patchsources(counties, counties_df)
     countytable, countytable_cds = build_countytable(status_df)
