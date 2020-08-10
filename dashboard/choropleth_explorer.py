@@ -96,7 +96,7 @@ def plot_config(ptype: str, data_source: ColumnDataSource) -> Figure:
     min_width, min_height, max_width, max_height = constants.base_dims
     state_args = {'width_policy': 'fit', 'height_policy': 'fit', 'min_height': min_height, 'min_width': min_width,
                   'max_height': max_height, 'max_width': max_width, 'min_border_left': 25,
-                  'tools': 'pan,wheel_zoom,reset'}
+                  'tools': 'wheel_zoom,reset'}
     plot_tools_config = {'x_axis_location': None, 'y_axis_location': None, 'border_fill_alpha': 0,
                          'background_fill_alpha': 0,
                          'background_fill_color': None, 'border_fill_color': None, 'outline_line_alpha': 0,
