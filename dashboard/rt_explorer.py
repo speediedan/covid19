@@ -16,7 +16,7 @@ import dashboard.dashboard_constants as constants
 
 
 def build_dashboard_dfs(rt_df: pd.DataFrame, status_df: pd.DataFrame) -> \
-        [pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Index]:
     # apply min case threshold
     #status_df = status_df.loc[(status_df['Total Estimated Cases'] > config.min_case_cnt)]
     # apply min case threshold
