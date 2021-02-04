@@ -113,7 +113,7 @@ def plot_seir_results(county_dates, county_model, r0_est, rt_est, county_st_dt):
 
 
 def build_seir_input(rt_df: pd.DataFrame) -> \
-        [int, int, np.ndarray, np.ndarray, float, float, datetime.datetime, datetime.datetime]:
+        Tuple[int, int, np.ndarray, np.ndarray, float, float, datetime.datetime, datetime.datetime]:
     target_county_df = rt_df[rt_df.index.get_level_values('name') == config.seir_target_county]
     county_st_dt = target_county_df.index.get_level_values('Date').min()
     county_f_dt = target_county_df.index.get_level_values('Date').max()

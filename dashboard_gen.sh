@@ -2,7 +2,7 @@
 source ~/.c19_config
 # The following env vars should be set via .c19_config (this should be automated in a setup script at some point...)
 # example settings:
-#export PATH="/opt/mozilla:/opt/anaconda/bin:$PATH"
+#export PATH="/opt/mozilla:/opt/miniconda/bin:$PATH"
 #export REPO_BASE="${HOME}/repos/edification"
 #export STAGE_BASE="${HOME}/datasets/covid19"
 #export LOG_DIR="${HOME}/covid19"
@@ -42,7 +42,7 @@ then
   echo "Lock file ${lock_file} exists, abandoning daemon startup"
   kill -s 2 $$
 fi
-source /opt/anaconda/etc/profile.d/conda.sh
+source /opt/miniconda/etc/profile.d/conda.sh
 target_env=$2
 conda activate $target_env
 if test -f $dash_logfile
@@ -56,7 +56,7 @@ if test -f $dash_logfile
       echo "Beginning dashboard generation mode in daemon mode " >> $dash_logfile
     fi
 fi
-/opt/anaconda/envs/${target_env}/bin/python ${COVID_BASE}/c19_analysis/dataprep_flow.py 1>>$dash_logfile 2>&1
+/opt/miniconda/envs/${target_env}/bin/python ${COVID_BASE}/c19_analysis/dataprep_flow.py 1>>$dash_logfile 2>&1
 dash_gen=$?
 if [[ ${dash_gen} -eq 0 ]]; then
   if [[ "${curr_branch}" == "master"  ]]; then
@@ -72,7 +72,7 @@ if [[ ${dash_gen} -eq 0 ]]; then
   rm $lock_file
 else
   echo "Dashboard generation failed. Output code was: ${dash_gen}" >> $dash_logfile
-  /opt/anaconda/envs/${target_env}/bin/python ${COVID_BASE}/notification.py -f "${dash_logfile}" -s "Dashboard Generation Failure"
+  /opt/miniconda/envs/${target_env}/bin/python ${COVID_BASE}/notification.py -f "${dash_logfile}" -s "Dashboard Generation Failure"
   rm $lock_file
   exit 1
 fi
