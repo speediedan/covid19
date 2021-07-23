@@ -1,7 +1,8 @@
 ---
 ---
 
-@import "{{ site.theme }}";
+//@import "{{ site.theme }}"; hardcode test below
+@import "jekyll-theme-cayman";
 .dashboard_graphs {
 	width: 90%;
 	height: 90%;
