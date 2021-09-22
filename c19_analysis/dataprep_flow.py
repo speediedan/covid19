@@ -11,6 +11,9 @@ import dashboard.rt_explorer as rt_explorer
 import dashboard.choropleth_explorer as choropleth_explorer
 import dashboard.static_mpl_viz as static_mpl_viz
 import pandas as pd
+import faulthandler
+
+faulthandler.enable()
 
 
 def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
