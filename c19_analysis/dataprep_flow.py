@@ -38,6 +38,9 @@ def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
         print('No update to case data source, loading core case data from cache')
         covid_cases_df = pd.read_csv(config.latest_case_data_zip, compression='gzip',
                                      index_col=['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'], parse_dates=True)
+    if config.analysis_days:
+        covid_cases_df = covid_cases_df[(covid_cases_df.index.get_level_values('Date') > (datetime.datetime.today()
+                                        - datetime.timedelta(config.analysis_days)))]
     covid_delta_df = covid_utils.add_columns(covid_cases_df)
     return covid_delta_df, updated
 

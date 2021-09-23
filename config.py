@@ -74,8 +74,10 @@ exported_rtdf_csv = Path(f"{eda_tmp_dir}/rtdf_export_csv.tar.gz")
 # based upon https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0002185
 R_T_MAX = 10
 r_t_range = np.linspace(0, R_T_MAX, R_T_MAX * 100 + 1)
+
 # keep only counties with confirmed case density of > n per million people
 case_density = 300
+analysis_days = 90  # number of previous days to analyze, set to None to analyze all previous days in COVID era
 epsilon = np.finfo(float).eps
 # test counties
 test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL', 'Elmore County, ID',
