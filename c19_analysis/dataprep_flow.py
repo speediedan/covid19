@@ -22,8 +22,8 @@ def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     county_pops_df = pd.read_csv(config.county_pops_csv)
     county_codes_df = pd.read_csv(config.county_codes_csv)
     latest_dt = covid_utils.latest_date(covid_cases_df)
-    saved_dt = datetime.datetime.strptime(covid_utils.load_json(config.ds_meta),'%Y-%m-%d %H:%M:%S') \
-        if config.ds_meta.exists() else datetime.datetime.strptime('01/01/2020','%m/%d/%Y')
+    saved_dt = datetime.datetime.strptime(covid_utils.load_json(config.ds_meta), '%Y-%m-%d %H:%M:%S') \
+        if config.ds_meta.exists() else datetime.datetime.strptime('01/01/2020', '%m/%d/%Y')
     updated = False
     if saved_dt < latest_dt or not config.latest_case_data_zip.exists():
         for cache in [config.repo_patient_onset_csv, config.county_rt_calc_zip]:
@@ -37,7 +37,7 @@ def build_latest_case_data() -> Tuple[pd.DataFrame, bool]:
     else:
         print('No update to case data source, loading core case data from cache')
         covid_cases_df = pd.read_csv(config.latest_case_data_zip, compression='gzip',
-                                  index_col=['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'], parse_dates=True)
+                                     index_col=['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'], parse_dates=True)
     covid_delta_df = covid_utils.add_columns(covid_cases_df)
     return covid_delta_df, updated
 
