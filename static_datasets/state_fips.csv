@@ -1,0 +1,56 @@
+abbr,state_id,state
+ak,02,alaska
+ms,28,mississippi
+al,01,alabama
+mt,30,montana
+ar,05,arkansas
+nc,37,north carolina
+as,60,american samoa
+nd,38,north dakota
+az,04,arizona
+ne,31,nebraska
+ca,06,california
+nh,33,new hampshire
+co,08,colorado
+nj,34,new jersey
+ct,09,connecticut
+nm,35,new mexico
+dc,11,district of columbia
+nv,32,nevada
+de,10,delaware
+ny,36,new york
+fl,12,florida
+oh,39,ohio
+ga,13,georgia
+ok,40,oklahoma
+gu,66,guam
+or,41,oregon
+hi,15,hawaii
+pa,42,pennsylvania
+ia,19,iowa
+pr,72,puerto rico
+id,16,idaho
+ri,44,rhode island
+il,17,illinois
+sc,45,south carolina
+in,18,indiana
+sd,46,south dakota
+ks,20,kansas
+tn,47,tennessee
+ky,21,kentucky
+tx,48,texas
+la,22,louisiana
+ut,49,utah
+ma,25,massachusetts
+va,51,virginia
+md,24,maryland
+vi,78,virgin islands
+me,23,maine
+vt,50,vermont
+mi,26,michigan
+wa,53,washington
+mn,27,minnesota
+wi,55,wisconsin
+mo,29,missouri
+wv,54,west virginia
+wy,56,wyoming
