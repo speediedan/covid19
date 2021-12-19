@@ -57,6 +57,7 @@ default_stage_dir = f"{os.environ['HOME']}/datasets/covid19/{curr_base}" if curr
 eda_tmp_dir = os.environ['STAGE_DIR'] if 'STAGE_DIR' in os.environ.keys() else default_stage_dir
 if not os.path.exists(eda_tmp_dir):
     create_dirs([eda_tmp_dir])
+
 ds_meta = Path(f"{eda_tmp_dir}/ds_meta.json")
 repo_patient_onset_zip = Path(f"{eda_tmp_dir}/latestdata.tar.gz")
 repo_patient_onset_csv = Path(f"{eda_tmp_dir}/latestdata.csv")
@@ -79,6 +80,7 @@ r_t_range = np.linspace(0, R_T_MAX, R_T_MAX * 100 + 1)
 case_density = 300
 analysis_days = 90  # number of previous days to analyze, set to None to analyze all previous days in COVID era
 epsilon = np.finfo(float).eps
+ma_window = 7  # set to 7 by default account for weekly periodic reporting effects that have become prominent
 # test counties
 test_counties = ['King County, WA', 'Kings County, NY', 'Bullock County, AL', 'Elmore County, ID',
                  'East Carroll Parish, LA', 'Anderson County, TX', 'San Bernardino County', 'Los Angeles County, CA']

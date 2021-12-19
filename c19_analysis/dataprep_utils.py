@@ -257,6 +257,8 @@ def process_df(df_raw: pd.DataFrame, county_pops: pd.DataFrame, county_codes: pd
 
 
 def add_columns(df_subr: pd.DataFrame) -> pd.DataFrame:
+    period_n = np.int(round(config.ma_window/2))
+    period_n1 = config.ma_window - np.int(round(config.ma_window/2))
     df_subr['Total Estimated Cases'] = df_subr.groupby(['id', 'estimated_pop', 'name', 'stateAbbr'])[
         'Estimated Onset Cases'].cumsum().astype(int)
     df_subr = df_subr[df_subr['Total Estimated Cases'] > 0]
@@ -266,16 +268,16 @@ def add_columns(df_subr: pd.DataFrame) -> pd.DataFrame:
     df_subr['node_days'] = df_subr['Date'] - df_subr['node_start_dt']
     df_subr = df_subr.set_index(['id', 'estimated_pop', 'name', 'stateAbbr', 'Date'])
     df_subr = df_subr.sort_values(by=['id', 'Date'])
-    df_subr['daily new cases ma'] = df_subr['Estimated Onset Cases'].rolling(window=4).mean().round()
+    df_subr['daily new cases ma'] = df_subr['Estimated Onset Cases'].rolling(window=config.ma_window).mean().round()
     df_subr['growth_rate'] = df_subr['Total Estimated Cases'].pct_change().round(4)
     df_subr.loc[df_subr['node_days'] < np.timedelta64(1, 'D'), 'growth_rate'] = None
-    df_subr['growth_period_n'] = df_subr['growth_rate'].rolling(4).mean()
-    df_subr['growth_period_n-1'] = df_subr['growth_rate'].shift(4).rolling(4).mean()
-    df_subr.loc[df_subr['node_days'] < np.timedelta64(3, 'D'), 'daily new cases ma'] = None
-    df_subr.loc[df_subr['node_days'] < np.timedelta64(4, 'D'), 'growth_period_n'] = None
-    df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), 'growth_period_n-1'] = None
+    df_subr['growth_period_n'] = df_subr['growth_rate'].rolling(config.ma_window).mean()
+    df_subr['growth_period_n-1'] = df_subr['growth_rate'].shift(config.ma_window).rolling(config.ma_window).mean()
+    df_subr.loc[df_subr['node_days'] < np.timedelta64(config.ma_window-1, 'D'), 'daily new cases ma'] = None
+    df_subr.loc[df_subr['node_days'] < np.timedelta64(period_n, 'D'), 'growth_period_n'] = None
+    df_subr.loc[df_subr['node_days'] < np.timedelta64(period_n1, 'D'), 'growth_period_n-1'] = None
     df_subr['2nd_order_growth'] = (df_subr['growth_period_n'] / df_subr['growth_period_n-1']).round(4) - 1
-    df_subr.loc[df_subr['node_days'] < np.timedelta64(8, 'D'), '2nd_order_growth'] = None
+    df_subr.loc[df_subr['node_days'] < np.timedelta64(config.ma_window, 'D'), '2nd_order_growth'] = None
     # filter days where there are no new cases since the preponderance of these are data collection errors
     # with the remainder being conditions wherein case loads have dropped below the threshold where we want to monitor
     # and thus the resultant upward Rt bias is irrelevant
