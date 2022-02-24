@@ -1,0 +1,13 @@
+<script type="text/javascript">
+var imageUrl = new Array();
+const time_horizon = 14;
+for (var i = 0; i <= time_horizon; i++) {
+	imageUrl[i] = 'assets/national_layout_'+i+'.png';
+        }
+$(document).on('input change', '#slider', function() {
+	//listen to slider changes
+	var v=$(this).val();//getting slider val
+	$('#sliderStatus').html( $(this).val() );
+	$("#national_img").prop("src", imageUrl[v]);
+});
+</script>
