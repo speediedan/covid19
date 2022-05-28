@@ -1,3 +1,5 @@
+> :sunrise_over_mountains: **Please note**: Daily generation of these dashboards was sunset on 2022.03.30.
+
 # "Real-Time" Covid19 [County-Level](https://speediedan.github.io/covid19/county_covid_explorer.html) &  [Choropleth](https://speediedan.github.io/covid19/choropleth_covid_county_explorer.html) Dashboards
 ---
 > ### [The "Real-Time" County-Level Dashboard](county_covid_explorer.html):
